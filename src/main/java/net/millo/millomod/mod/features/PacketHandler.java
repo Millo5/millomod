@@ -2,6 +2,7 @@ package net.millo.millomod.mod.features;
 
 
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.*;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -34,6 +35,12 @@ public class PacketHandler {
     }
 
     public <E extends Packet<?>> boolean handlePacket(E packet) {
+
+        if (packet instanceof BundleS2CPacket bundle) {
+            bundle.getPackets().forEach(this::handlePacket);
+            return false;
+        }
+
         List<Method> subscriberMethods = subscribersReceive.get(packet.getClass());
         if (subscriberMethods == null) return false;
         boolean re = false;

@@ -45,7 +45,7 @@ public class Teleport {
     public boolean positionLook(PlayerPositionLookS2CPacket pos) {
         if (locationItem == null || !active) return false;
         if (MilloMod.MC.getNetworkHandler() == null || MilloMod.MC.player == null) return false;
-        MilloMod.MC.getNetworkHandler().sendPacket(new TeleportConfirmC2SPacket(pos.getTeleportId()));
+        MilloMod.MC.getNetworkHandler().sendPacket(new TeleportConfirmC2SPacket(pos.teleportId()));
         if (!haltForTp) {
             MilloMod.MC.player.setPosition(target);
             active = false;
@@ -157,7 +157,7 @@ public class Teleport {
             for (int i = 0; i < Math.min(lastTickPackets + 5,50); i++) {
                 thisTickPackets++;
                 doNotSuppress = true;
-                MilloMod.MC.getNetworkHandler().sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(false));
+                MilloMod.MC.getNetworkHandler().sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(false, false));
             }
         }
         thisTickPackets++;

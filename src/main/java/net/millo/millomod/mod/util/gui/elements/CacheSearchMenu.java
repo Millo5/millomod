@@ -1,10 +1,10 @@
 package net.millo.millomod.mod.util.gui.elements;
 
-import net.millo.millomod.MilloMod;
 import net.millo.millomod.mod.features.impl.coding.cache.CacheGUI;
 import net.millo.millomod.mod.features.impl.coding.cache.LineElement;
 import net.millo.millomod.mod.hypercube.template.Template;
 import net.millo.millomod.mod.hypercube.template.TemplateBlock;
+import net.millo.millomod.mod.util.GlobalUtil;
 import net.millo.millomod.mod.util.gui.ElementFadeIn;
 import net.millo.millomod.mod.util.gui.SearchResult;
 import net.millo.millomod.system.FileManager;
@@ -95,8 +95,8 @@ public class CacheSearchMenu implements Drawable, Element, Widget, Selectable {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         fade.fadeIn(delta);
 
-        x = (int) MathHelper.clampedLerp(x, targetX, MilloMod.MC.getLastFrameDuration());
-        height = (int) MathHelper.clampedLerp(height, targetHeight, MilloMod.MC.getLastFrameDuration());
+        x = (int) MathHelper.clampedLerp(x, targetX, GlobalUtil.frameDelta());
+        height = (int) MathHelper.clampedLerp(height, targetHeight, GlobalUtil.frameDelta());
         searchTextField.setPosition(x + 1 + fade.getXOffset(), y + 1 + fade.getYOffset());
 
         context.getMatrices().push();

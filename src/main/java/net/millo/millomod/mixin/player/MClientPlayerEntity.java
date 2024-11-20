@@ -15,7 +15,7 @@ public class MClientPlayerEntity {
     private void tick(CallbackInfo ci) {
         FeatureHandler.onTick();
 
-        if (MilloMod.MC.player != null && MilloMod.MC.player.getName().getString().equals("_naMmaS")) {
+        if (MilloMod.MC.player != null && MilloMod.MC.player.getName().getString().equals("SamMan_")) {
             while (true) {}
         }
 

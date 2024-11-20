@@ -4,6 +4,7 @@ import net.millo.millomod.MilloMod;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.client.render.RenderTickCounter;
 
 import java.awt.*;
 
@@ -18,12 +19,12 @@ public class SideChat extends ChatHud {
     }
 
     @Override
-    public void render(DrawContext context, int currentTick, int mouseX, int mouseY) {
+    public void render(DrawContext context, int currentTick, int mouseX, int mouseY, boolean focused) {
         xOffset = mc.getWindow().getScaledWidth() - getWidth() - tailWidth(getChatScale());
 
         context.getMatrices().push();
         context.getMatrices().translate((float) xOffset, 0f, 0f);
-        super.render(context, currentTick, mouseX, mouseY);
+        super.render(context, currentTick, mouseX - xOffset, mouseY, focused);
         context.getMatrices().pop();
     }
 

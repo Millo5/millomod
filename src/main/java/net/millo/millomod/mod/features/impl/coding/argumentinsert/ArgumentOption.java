@@ -1,6 +1,10 @@
 package net.millo.millomod.mod.features.impl.coding.argumentinsert;
 
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.LoreComponent;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -13,6 +17,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 
 import java.awt.*;
+import java.util.List;
 
 public abstract class ArgumentOption {
     protected final String id;
@@ -31,10 +36,14 @@ public abstract class ArgumentOption {
         NbtCompound pbv = new NbtCompound();
         pbv.putString("hypercube:varitem", getVarItemString(item, value));
 
-        NbtCompound nbt = item.getNbt();
-        nbt.putInt("CustomModelData", 5000);
-        nbt.put("PublicBukkitValues", pbv);
-        item.setNbt(nbt);
+//        NbtCompound nbt = item.getNbt();
+//        nbt.putInt("CustomModelData", 5000);
+//        nbt.put("PublicBukkitValues", pbv);
+//        item.setNbt(nbt);
+
+        NbtComponent custom_data = NbtComponent.of(pbv);
+
+        item.set(DataComponentTypes.CUSTOM_DATA, custom_data);
 
         return item;
     }
@@ -94,7 +103,7 @@ public abstract class ArgumentOption {
 
         @Override
         protected String getVarItemString(ItemStack item, String value) {
-            item.setCustomName(Text.literal(value).setStyle(Style.EMPTY.withColor(0xff5555).withItalic(false)));
+            item.set(DataComponentTypes.CUSTOM_NAME, Text.literal(value).setStyle(Style.EMPTY.withColor(0xff5555).withItalic(false)));
             return "{\"id\":\"num\",\"data\":{\"name\":\"" + value + "\"}}";
         }
     }
@@ -105,7 +114,7 @@ public abstract class ArgumentOption {
 
         @Override
         protected String getVarItemString(ItemStack item, String value) {
-            item.setCustomName(Text.literal(value).setStyle(Style.EMPTY.withItalic(false)));
+            item.set(DataComponentTypes.CUSTOM_NAME, Text.literal(value).setStyle(Style.EMPTY.withItalic(false)));
             return "{\"id\":\"txt\",\"data\":{\"name\":\"" + value + "\"}}";
         }
     }
@@ -116,7 +125,7 @@ public abstract class ArgumentOption {
 
         @Override
         protected String getVarItemString(ItemStack item, String value) {
-            item.setCustomName(Text.literal(value).setStyle(Style.EMPTY.withColor(Formatting.AQUA).withItalic(false)));
+            item.set(DataComponentTypes.CUSTOM_NAME, Text.literal(value).setStyle(Style.EMPTY.withColor(Formatting.AQUA).withItalic(false)));
             return "{\"id\":\"comp\",\"data\":{\"name\":\"" + value + "\"}}";
         }
     }
@@ -153,13 +162,12 @@ public abstract class ArgumentOption {
                 }
             }
 
-            item.setCustomName(Text.literal(value).setStyle(Style.EMPTY.withItalic(false)));
-            NbtCompound dispNbt = item.getNbt().getCompound("display");
-            NbtList loreList = new NbtList();
-            loreList.add(NbtString.of(scope.lore));
-            dispNbt.put("Lore", loreList);
-            item.getNbt().put("display", dispNbt);
 
+            LoreComponent lore = new LoreComponent(List.of());
+            lore.lines().add(Text.of(scope.lore));
+
+            item.set(DataComponentTypes.CUSTOM_NAME, Text.literal(value).setStyle(Style.EMPTY.withItalic(false)));
+            item.set(DataComponentTypes.LORE, lore);
 
             return "{\"id\":\"var\",\"data\":{\"name\":\"" + value + "\",\"scope\":\"" + scope.scope + "\"}}";
         }

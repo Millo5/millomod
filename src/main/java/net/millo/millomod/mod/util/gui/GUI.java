@@ -7,9 +7,13 @@ import net.millo.millomod.mod.util.gui.elements.ContextElement;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.TooltipPositioner;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
 import java.awt.*;
+import java.lang.reflect.Field;
+import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public abstract class GUI extends Screen {
@@ -19,6 +23,18 @@ public abstract class GUI extends Screen {
     protected int paddingY = 40;
     private ElementFadeIn fade = new ElementFadeIn(ElementFadeIn.Direction.UP);
     private GUI parent;
+    private PositionedTooltip tooltip;
+
+    private static class PositionedTooltip {
+        List<OrderedText> tooltip;
+        TooltipPositioner positioner;
+
+        public PositionedTooltip(List<OrderedText> tooltip, TooltipPositioner positioner) {
+            this.tooltip = tooltip;
+            this.positioner = positioner;
+        }
+    }
+
 
     public GUI(Text title) {
         super(title);
@@ -36,6 +52,13 @@ public abstract class GUI extends Screen {
         if (parent != null && client != null) {
             client.setScreen(parent);
         } else super.close();
+    }
+
+    @Override
+    public void setTooltip(List<OrderedText> tooltip, TooltipPositioner positioner, boolean focused) {
+        if (this.tooltip == null || focused) {
+            this.tooltip = new PositionedTooltip(tooltip, positioner);
+        }
     }
 
     public void open() {
@@ -56,8 +79,14 @@ public abstract class GUI extends Screen {
         context.fill(x, y, x+backgroundWidth, y+backgroundHeight, 0, color);
         context.getMatrices().pop();
     }
+
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         fade.fadeIn(delta);
+
+        if (tooltip != null) {
+            context.drawTooltip(textRenderer, tooltip.tooltip, tooltip.positioner, mouseX, mouseY);
+            this.tooltip = null;
+        }
 
         if (fade.getProgress() >= 1f) {
             super.render(context, mouseX, mouseY, delta);

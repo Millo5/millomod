@@ -2,10 +2,18 @@ package net.millo.millomod.mod.features.impl.coding.cache;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.millo.millomod.MilloMod;
+import net.millo.millomod.mod.util.ItemUtil;
 import net.millo.millomod.mod.util.gui.GUIStyles;
 import net.millo.millomod.system.PlayerUtil;
 import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.component.ComponentChanges;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipData;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.MutableText;
@@ -13,10 +21,8 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ArgumentItem {
@@ -67,55 +73,39 @@ public class ArgumentItem {
             case "g_val" -> line.addComponent(Text.literal(type + (Objects.equals(target, "Default") ? "" : (" [" + target.charAt(0) + "]"))).setStyle(GUIStyles.GAME_VALUE.getStyle()),
                                 Tooltip.of(Text.literal(target).setStyle(GUIStyles.COMMENT.getStyle())));
             case "item" -> {
-                try {
-                    String nbtString = get("item");
-                    ItemStack item = ItemStack.fromNbt(NbtHelper.fromNbtProviderString(nbtString));
-                    MutableText tooltipTxt = Text.empty();
-                    NbtCompound nbt = item.getNbt();
+                String nbtString = get("item");
 
-                    // ITEM NAME
-                    if (nbt != null && nbt.contains("display")) {
-                        var display = nbt.getCompound("display");
-                        if (display.contains("Name")) {
-                            String itemName = display.getString("Name");
-                            try {
-                                tooltipTxt.append(Text.Serialization.fromJson(itemName));
-                            } catch (Exception e) {
-                                tooltipTxt.append(Text.of(itemName));
-                            }
-                        }
-                    }
+                ItemStack item = ItemUtil.fromNbt(nbtString);
 
-                    // ITEM MATERIAL
-                    tooltipTxt.append(Text.literal("\n" + item.getItem().toString()).setStyle(GUIStyles.COMMENT.getStyle()));
-
-
-                    // ITEM TAGS
-                    if (nbt != null) {
-                        NbtCompound pbv = nbt.getCompound("PublicBukkitValues");
-                        if (pbv != null) {
-                            Set<String> keys = pbv.getKeys();
-                            if (!keys.isEmpty()) {
-                                tooltipTxt.append(Text.literal("\n\nTags:\n").setStyle(GUIStyles.COMMENT.getStyle()));
-
-                                keys.forEach(key -> {
-                                            String value = pbv.get(key).toString();
-                                            value = value.length() > 50 ? value.substring(0, 50)+"..." : value;
-                                            tooltipTxt.append(Text.literal(key.replaceFirst("^.+:", "")).setStyle(GUIStyles.ACTION.getStyle())
-                                                    .append(Text.literal(" = ").setStyle(GUIStyles.DEFAULT.getStyle()))
-                                                    .append(Text.literal(value).setStyle(GUIStyles.NAME.getStyle()))
-                                                    .append(Text.literal("\n")));
-                                        }
-                                );
-                            }
-                        }
-                    }
-
-                    line.addComponent(Text.literal(item.toString()).setStyle(GUIStyles.ITEM.getStyle()), Tooltip.of(tooltipTxt));
-
-                } catch (CommandSyntaxException e) {
-                    e.printStackTrace();
+                List<Text> tooltipLines = item.getTooltip(Item.TooltipContext.DEFAULT, MilloMod.MC.player, TooltipType.ADVANCED);
+                MutableText tooltipText = Text.empty();
+                int i = 0;
+                for (Text tooltipLine : tooltipLines) {
+                    tooltipText.append(tooltipLine);
+                    if (i++ < tooltipLines.size()-1) tooltipText.append(Text.of("\n"));
                 }
+
+                Map<String, Object> tags = ItemUtil.getItemTags(item);
+                if (tags != null) {
+                    Set<String> keys = tags.keySet();
+                    if (!keys.isEmpty()) {
+                        tooltipText.append(Text.literal("\n\nTags:\n").setStyle(GUIStyles.COMMENT.getStyle()));
+
+                        keys.forEach(key -> {
+                                    String value = tags.get(key).toString();
+                                    value = value.length() > 50 ? value.substring(0, 50)+"..." : value;
+                                    tooltipText.append(Text.literal(key.replaceFirst("^.+:", "")).setStyle(GUIStyles.ACTION.getStyle())
+                                            .append(Text.literal(" = ").setStyle(GUIStyles.DEFAULT.getStyle()))
+                                            .append(Text.literal(value).setStyle(GUIStyles.NAME.getStyle()))
+                                            .append(Text.of("\n")));
+                                }
+                        );
+                    }
+                }
+
+
+                line.addComponent(Text.literal(item.toString()).setStyle(GUIStyles.ITEM.getStyle()), Tooltip.of(tooltipText));
+
             }
             case "pn_el" -> line.addComponent(Text.literal(name).setStyle(GUIStyles.PARAMETER.getStyle()),
                     Tooltip.of(

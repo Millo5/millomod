@@ -19,7 +19,7 @@ public class CacheCommand extends Command {
                         .then(ArgBuilder.literal("plot").executes(ctx -> {
                             boolean s = ((PlotCaching) FeatureHandler.getFeature("plot_caching")).scanPlot();
                             if (MilloMod.MC.player != null)
-                                MilloMod.MC.player.sendMessage(Text.of(s ? "Scanning entire plot" : "Quit scan"));
+                                MilloMod.MC.player.sendMessage(Text.of(s ? "Scanning entire plot" : "Quit scan"), false);
                             return 1;
                         }))
                 .executes(ctx -> {

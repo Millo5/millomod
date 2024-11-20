@@ -5,6 +5,7 @@ import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 import net.millo.millomod.MilloMod;
 import net.millo.millomod.mod.features.Feature;
 import net.millo.millomod.mod.features.Keybound;
+import net.millo.millomod.mod.util.ItemUtil;
 import net.millo.millomod.system.Config;
 import net.millo.millomod.system.PlayerUtil;
 import net.minecraft.block.ShapeContext;
@@ -14,7 +15,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.SpectralArrowItem;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -25,16 +29,6 @@ public class NotSwitcher extends Feature implements Keybound {
 
 
     KeyBinding key;
-    private final ItemStack notArrowItem;
-
-    public NotSwitcher() {
-        try {
-            String itemNbt = "{Count:1b,id:\"minecraft:spectral_arrow\",tag:{CustomModelData:0,HideFlags:255,display:{Lore:['{\"text\":\"\",\"extra\":[{\"text\":\"Click on a Condition block with this\",\"obfuscated\":false,\"italic\":false,\"underlined\":false,\"strikethrough\":false,\"color\":\"gray\",\"bold\":false}]}','{\"text\":\"\",\"extra\":[{\"text\":\"to switch between \\'IF\\' and \\'IF NOT\\'.\",\"obfuscated\":false,\"italic\":false,\"underlined\":false,\"strikethrough\":false,\"color\":\"gray\",\"bold\":false}]}'],Name:'{\"italic\":false,\"color\":\"#FFD47F\",\"text\":\"NOT Arrow\"}'}}}";
-            notArrowItem = ItemStack.fromNbt(NbtHelper.fromNbtProviderString(itemNbt));
-        } catch (CommandSyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
 
     @Override
@@ -80,7 +74,7 @@ public class NotSwitcher extends Feature implements Keybound {
 
             ItemStack item = player.getMainHandStack();
 
-            PlayerUtil.sendHandItem(notArrowItem);
+            PlayerUtil.sendHandItem(ItemUtil.NOT_ARROW.getItem());
             PlayerUtil.rightClickPos(blockPos);
             PlayerUtil.sendHandItem(item);
         }

@@ -5,13 +5,18 @@ import net.fabricmc.api.Environment;
 import net.millo.millomod.MilloMod;
 import net.millo.millomod.mod.features.impl.util.teleport.TeleportHandler;
 import net.millo.millomod.mod.util.gui.*;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.tooltip.FocusedTooltipPositioner;
 import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.client.gui.tooltip.TooltipPositioner;
+import net.minecraft.client.gui.tooltip.WidgetTooltipPositioner;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.widget.Widget;
@@ -25,7 +30,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
-public class LineElement implements ScrollableEntryI, Element, Widget, Selectable, ClickableElementI {
+public class LineElement implements ScrollableEntryI, Element, Widget, Selectable, ClickableElementI, TooltipHolder {
     private int x, y, realX, realY;
     protected int width, height;
     protected boolean hovered;
@@ -165,8 +170,13 @@ public class LineElement implements ScrollableEntryI, Element, Widget, Selectabl
             int xx = textWidget.getX() + xOff + getRealX();
             int yy = textWidget.getY() + getRealY();
             boolean hovered = mouseX >= xx && mouseX < xx+textWidget.getWidth() && mouseY >= yy && mouseY < yy + textWidget.getHeight();
+            boolean tooltip = false;
             if (hovered) {
                 context.fill(x, y, x+textWidget.getWidth(), y + textWidget.getHeight(), new Color(255, 255, 255, 20).hashCode());
+                if (textWidget.getTooltip() != null) {
+                    setTooltip(textWidget.getTooltip());
+                    tooltip = true;
+                }
             }
             if (!searchHighlight.isEmpty() && textWidget.getMessage().getString().toLowerCase().contains(searchHighlight)) {
                 context.fill(x, y, x+textWidget.getWidth(), y + textWidget.getHeight(), new Color(0, 255, 255, 80).hashCode());
@@ -175,11 +185,11 @@ public class LineElement implements ScrollableEntryI, Element, Widget, Selectabl
 
             // Text
             textWidget.renderWidget(context, mouseX, mouseY, delta);
-
-            // Tooltip
-            if (hovered && textWidget.getTooltip() != null) {
-                textWidget.getTooltip().render(isHovered(), isFocused(), getNavigationFocus());
+            Screen screen = MinecraftClient.getInstance().currentScreen;
+            if (tooltip && screen instanceof GUI gui) {
+                gui.setTooltip(getTooltip().getTooltip(), this.createPositioner(getNavigationFocus(), hovered, isFocused()), isFocused());
             }
+
 
             xOff += textWidget.getWidth();
             context.getMatrices().translate(textWidget.getWidth(), 0, 0);
@@ -191,6 +201,9 @@ public class LineElement implements ScrollableEntryI, Element, Widget, Selectabl
         context.getMatrices().pop();
     }
 
+    private TooltipPositioner createPositioner(ScreenRect focus, boolean hovered, boolean focused) {
+        return !hovered && focused && MinecraftClient.getInstance().getNavigationType().isKeyboard() ? new FocusedTooltipPositioner(focus) : new WidgetTooltipPositioner(focus);
+    }
 
 
     public void setFade(ElementFadeIn fade) {

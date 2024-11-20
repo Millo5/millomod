@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import net.millo.millomod.MilloMod;
+import net.millo.millomod.mod.util.ItemUtil;
 import net.millo.millomod.mod.util.gui.GUIStyles;
 import net.millo.millomod.system.PlayerUtil;
 import net.minecraft.item.ItemStack;
@@ -80,7 +81,7 @@ public class MilloWebSocketServer extends WebSocketServer {
         if (type.equals("item")) {
             ItemStack stack;
             try {
-                stack = ItemStack.fromNbt(NbtHelper.fromNbtProviderString(data));
+                stack = ItemUtil.fromNbt(data);
             } catch (Exception e) {
                 message(MessageType.ERROR, source, "Failed to parse provided NBT data.");
                 message(MessageType.INFO, source, e.getMessage());

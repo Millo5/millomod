@@ -28,14 +28,9 @@ public class LagslayerHUD extends Feature implements IRenderable {
     private float renderedCpuUsage = 0f;
     private float renderedAlpha = 0f;
     private Date updateTime = new Date();
-    private final Identifier wumpusId;
 
     private int x = 20, y = 20;
     private final Pattern lsRegex = Pattern.compile("^CPU Usage: \\[▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮] \\((\\d+\\.\\d+)%\\)$");
-
-    public LagslayerHUD() {
-        wumpusId = new Identifier(MilloMod.MOD_ID, "textures/gui/wumpus.png");
-    }
 
 
     @Override
@@ -54,7 +49,7 @@ public class LagslayerHUD extends Feature implements IRenderable {
         if (!enabled) return false;
 
         // CPU Usage: [▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮] (00.00%)
-        String content = packet.getMessage().getString();
+        String content = packet.text().getString();
         Matcher matcher = lsRegex.matcher(content);
         if (matcher.find()) {
             String cpuUsageStr = matcher.group(1);
@@ -78,12 +73,10 @@ public class LagslayerHUD extends Feature implements IRenderable {
 
     private void renderDonut(DrawContext context, float delta, float centerX, float centerY, float innerRadius, float outerRadius, int segments, int color, float start, float end) {
         Matrix4f matrix4f = context.getMatrices().peek().getPositionMatrix();
-        float alpha = (float) ColorHelper.Argb.getAlpha(color) / 255.0F;
-        float red = (float) ColorHelper.Argb.getRed(color) / 255.0F;
-        float green = (float) ColorHelper.Argb.getGreen(color) / 255.0F;
-        float blue = (float) ColorHelper.Argb.getBlue(color) / 255.0F;
-
-        VertexConsumer vertexConsumer = context.getVertexConsumers().getBuffer(RenderLayer.getGui());
+        float alpha = (float) ColorHelper.getAlpha(color) / 255.0F;
+        float red = (float) ColorHelper.getRed(color) / 255.0F;
+        float green = (float) ColorHelper.getGreen(color) / 255.0F;
+        float blue = (float) ColorHelper.getBlue(color) / 255.0F;
 
         double startAngle = start * 2 * Math.PI;
         double endAngle = end * 2 * Math.PI;
@@ -105,15 +98,20 @@ public class LagslayerHUD extends Feature implements IRenderable {
             float x2_outer = centerX + (float) (Math.cos(angle2) * outerRadius);
             float y2_outer = centerY + (float) (Math.sin(angle2) * outerRadius);
 
-            vertexConsumer.vertex(matrix4f, x1_outer, y1_outer, 0).color(red, green, blue, alpha).next();
-            vertexConsumer.vertex(matrix4f, x2_outer, y2_outer, 0).color(red, green, blue, alpha).next();
-            vertexConsumer.vertex(matrix4f, x2_inner, y2_inner, 0).color(red, green, blue, alpha).next();
-            vertexConsumer.vertex(matrix4f, x1_inner, y1_inner, 0).color(red, green, blue, alpha).next();
+            context.draw((provider -> {
+                VertexConsumer consumer = provider.getBuffer(RenderLayer.getGui());
 
-            vertexConsumer.vertex(matrix4f, x1_inner, y1_inner, 0).color(red, green, blue, alpha).next();
-            vertexConsumer.vertex(matrix4f, x2_inner, y2_inner, 0).color(red, green, blue, alpha).next();
-            vertexConsumer.vertex(matrix4f, x2_outer, y2_outer, 0).color(red, green, blue, alpha).next();
-            vertexConsumer.vertex(matrix4f, x1_outer, y1_outer, 0).color(red, green, blue, alpha).next();
+                consumer.vertex(matrix4f, x1_outer, y1_outer, 0).color(red, green, blue, alpha);
+                consumer.vertex(matrix4f, x2_outer, y2_outer, 0).color(red, green, blue, alpha);
+                consumer.vertex(matrix4f, x2_inner, y2_inner, 0).color(red, green, blue, alpha);
+                consumer.vertex(matrix4f, x1_inner, y1_inner, 0).color(red, green, blue, alpha);
+
+                consumer.vertex(matrix4f, x1_inner, y1_inner, 0).color(red, green, blue, alpha);
+                consumer.vertex(matrix4f, x2_inner, y2_inner, 0).color(red, green, blue, alpha);
+                consumer.vertex(matrix4f, x2_outer, y2_outer, 0).color(red, green, blue, alpha);
+                consumer.vertex(matrix4f, x1_outer, y1_outer, 0).color(red, green, blue, alpha);
+            }));
+
         }
 
         context.draw();

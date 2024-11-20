@@ -2,9 +2,13 @@ package net.millo.millomod.mod.hypercube.template;
 
 import com.google.gson.Gson;
 import net.millo.millomod.mod.features.impl.util.Tracker;
+import net.millo.millomod.mod.util.gui.GUIStyles;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 
 import java.io.ByteArrayInputStream;
@@ -59,6 +63,7 @@ public class Template {
     public String getFileName() {
         return parseFileName(getName()) + "." + getMethodName();
     }
+
     public static String parseFileName(String fileName) {
         String replacements = "[<>:\"/\\|?*]";
 
@@ -73,9 +78,11 @@ public class Template {
         matcher.appendTail(result);
         return result.toString();
     }
+
     public String getMethodName() {
         return blocks.get(0).block;
     }
+
     public String getName() {
         String name = blocks.get(0).data;
         if (name == null) name = blocks.get(0).action;
@@ -87,24 +94,20 @@ public class Template {
 
         ItemStack item = new ItemStack(Items.ENDER_CHEST);
 
+        NbtCompound nbt = new NbtCompound();
+
         NbtCompound pbv = new NbtCompound();
         String data = "{\"author\":\"MILLOMOD\",\"name\":\"§6» §e#NAME\",\"version\":1,\"code\":\"#CODE\"}"
                 .replace("#NAME", getName())
                 .replace("#CODE", b64Code);
         pbv.putString("hypercube:codetemplatedata", data);
 
-        NbtCompound nbt = item.getNbt();
-        if (nbt == null) nbt = new NbtCompound();
         nbt.put("PublicBukkitValues", pbv);
 
-        NbtCompound display = new NbtCompound();
-        String displayName ="{\"text\":\"\",\"extra\":[{\"text\":\"#TYPE \",\"obfuscated\":false,\"italic\":false,\"underlined\":false,\"strikethrough\":false,\"color\":\"aqua\",\"bold\":true},{\"text\":\"» \",\"italic\":false,\"color\":\"dark_aqua\",\"bold\":false},{\"text\":\"#NAME\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://#NAME\"},\"italic\":false,\"color\":\"aqua\"},{\"text\":\"\",\"italic\":false,\"color\":\"aqua\"}]}";
-        displayName = displayName.replaceAll("#TYPE", getMethodName()).replaceAll("#NAME", Matcher.quoteReplacement(getName()));
-        display.putString("Name", displayName);
+        NbtComponent custom_data = NbtComponent.of(nbt);
 
-        nbt.put("display", display);
-
-        item.setNbt(nbt);
+        item.set(DataComponentTypes.ITEM_NAME, Text.literal(getName()).setStyle(GUIStyles.BLOCK_TAG.getStyle()));
+        item.set(DataComponentTypes.CUSTOM_DATA, custom_data);
 
         return item;
     }

@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.millo.millomod.mod.util.gui.ClickableElementI;
 import net.millo.millomod.mod.util.gui.ElementFadeIn;
 import net.millo.millomod.mod.util.gui.ScrollableEntryI;
+import net.millo.millomod.mod.util.gui.TooltipHolder;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
@@ -12,24 +13,25 @@ import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
+import net.minecraft.client.gui.tooltip.TooltipState;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.item.Item;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
-public class ButtonElement implements ScrollableEntryI, Element, Widget, Selectable, ClickableElementI {
+public class ButtonElement implements ScrollableEntryI, Element, Widget, Selectable, ClickableElementI, TooltipHolder {
     private int x, y, realX, realY;
     protected int width, height;
     protected boolean hovered;
     public boolean visible = true;
-
-    @Nullable
-    private Tooltip tooltip;
 
     PressAction onPress;
     protected ElementFadeIn fade = new ElementFadeIn(ElementFadeIn.Direction.RIGHT);
@@ -62,12 +64,10 @@ public class ButtonElement implements ScrollableEntryI, Element, Widget, Selecta
         if (this.visible) {
             this.hovered = mouseX >= this.getRealX() && mouseY >= this.getRealY() && mouseX < this.getRealX() + this.width && mouseY < this.getRealY() + this.height;
             this.renderWidget(context, mouseX, mouseY, delta);
-            if (this.tooltip != null) {
-                this.tooltip.render(this.isHovered(), this.isFocused(), this.getNavigationFocus());
-            }
-
+            this.tooltip.render(this.isHovered(), this.isFocused(), this.getNavigationFocus());
         }
     }
+
     protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         fade.fadeIn(delta);
 
@@ -180,9 +180,6 @@ public class ButtonElement implements ScrollableEntryI, Element, Widget, Selecta
         textWidget = new TextWidget(x, y, width, height, message, textRenderer);
     }
 
-    public void setTooltip(Text literal) {
-        tooltip = Tooltip.of(literal);
-    }
 
     private int z = 0;
     public void setZ(int z) {

@@ -33,11 +33,6 @@ public class TextElement extends TextWidget implements ScrollableEntryI {
         super.setX(x + fade.getXOffset());
         super.setY(y + fade.getYOffset());
         super.renderWidget(context, mouseX, mouseY, delta);
-
-        this.hovered = mouseX >= this.getRealX() && mouseY >= this.getRealY() && mouseX < this.getRealX() + this.width && mouseY < this.getRealY() + this.height;
-        if (getTooltip() != null) {
-            getTooltip().render(this.isHovered(), this.isFocused(), this.getNavigationFocus());
-        }
     }
 
     public void setRealX(int x) {

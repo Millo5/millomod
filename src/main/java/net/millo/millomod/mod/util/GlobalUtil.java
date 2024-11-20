@@ -7,6 +7,7 @@ import net.minecraft.client.util.InputUtil;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.util.HashMap;
+import java.util.function.Predicate;
 
 public class GlobalUtil {
 
@@ -33,5 +34,12 @@ public class GlobalUtil {
         return false;
     }
 
+    public static float frameDelta() {
+        return MilloMod.MC.getRenderTickCounter().getLastFrameDuration();
+    }
+
+    public static <T> boolean applyIfNonNull(T obj, Predicate<T> consumer) {
+        return obj != null && consumer.test(obj);
+    }
 
 }

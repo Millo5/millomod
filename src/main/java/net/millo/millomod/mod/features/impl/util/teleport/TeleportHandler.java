@@ -27,17 +27,19 @@ public class TeleportHandler extends Feature {
 
 
     @HandlePacket
-    public boolean positionLook(PlayerPositionLookS2CPacket pos) {
+    public boolean positionLook(PlayerPositionLookS2CPacket packet) {
         if (!active) return false;
 
         if (MilloMod.MC.getNetworkHandler() == null || MilloMod.MC.player == null) return false;
 
         if (serverSide) {
-            MilloMod.MC.getNetworkHandler().sendPacket(new TeleportConfirmC2SPacket(pos.getTeleportId()));
+            MilloMod.MC.getNetworkHandler().sendPacket(new TeleportConfirmC2SPacket(packet.teleportId()));
         }
 
         ClientPlayerEntity player = MilloMod.MC.player;
         if (player == null) return serverSide;
+
+        Vec3d pos = packet.change().position();
 
         lastTeleportPosition = new Vec3d(pos.getX(), pos.getY(), pos.getZ());
 
@@ -47,8 +49,8 @@ public class TeleportHandler extends Feature {
                 callback.run();
             }
         } else {
-            if (!pos.getFlags().contains(PositionFlag.X_ROT) && !pos.getFlags().contains(PositionFlag.Y_ROT)
-                    && pos.getPitch() == 0 && pos.getYaw() == 0) {
+            if (!packet.relatives().contains(PositionFlag.X_ROT) && !packet.relatives().contains(PositionFlag.Y_ROT)
+                    && packet.change().pitch() == 0 && packet.change().yaw() == 0) {
                 active = false;
                 callback.run();
             }

@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 public class MilloMod implements ClientModInitializer {
 
     public static final String MOD_ID = "millomod";
-    public static final String MOD_VERSION = "1.5.4";
+    public static final String MOD_VERSION = "1.6.1";
 
     @SuppressWarnings("unused")
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);

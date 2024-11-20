@@ -41,6 +41,13 @@ public class MChatScreen extends Screen {
         context.fill(0, height - 14, 2, height - 2, Color.PINK.hashCode());
     }
 
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/ChatHud;render(Lnet/minecraft/client/gui/DrawContext;IIIZ)V"))
+    public void renderSideChat(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        if (MilloMod.MC.inGameHud instanceof HudWithSideChat) {
+            ((HudWithSideChat) MilloMod.MC.inGameHud).millomod$getSideChat().render(context, MilloMod.MC.inGameHud.getTicks(), mouseX, mouseY, MilloMod.MC.currentScreen == this);
+        }
+    }
+
     @WrapOperation(method = "render", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/gui/hud/ChatHud;getIndicatorAt(DD)Lnet/minecraft/client/gui/hud/MessageIndicator;"))
     public MessageIndicator renderSideChat(ChatHud mainChat, double mouseX, double mouseY, Operation<MessageIndicator> operation) {

@@ -7,10 +7,15 @@ import net.millo.millomod.mod.features.FeatureHandler;
 import net.millo.millomod.mod.features.impl.global.sidechat.HudWithSideChat;
 import net.millo.millomod.mod.features.impl.global.sidechat.SideChat;
 import net.millo.millomod.mod.features.impl.global.sidechat.SideChatFeature;
+import net.millo.millomod.mod.util.GlobalUtil;
 import net.millo.millomod.mod.util.RenderInfo;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.LayeredDrawer;
 import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.Window;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -26,30 +31,27 @@ public abstract class MInGameHUD implements HudWithSideChat {
 
     @Shadow public abstract TextRenderer getTextRenderer();
 
-    @Shadow private int scaledWidth;
-
-    @Shadow private int scaledHeight;
+    @Shadow private MinecraftClient client;
 
     @Unique
     private final SideChat sideChat = new SideChat();
 
     @Inject(method = "render", at = @At("RETURN"))
-    private void render(DrawContext context, float tickDelta, CallbackInfo ci) {
+    private void render(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
+        Window window = client.getWindow();
         FeatureHandler.renderHUD(new RenderInfo(context,
-                tickDelta,
+                tickCounter.getTickDelta(false),
                 ci,
-                scaledWidth,
-                scaledHeight,
-                MilloMod.MC.getLastFrameDuration(),
+                window.getScaledWidth(),
+                window.getScaledHeight(),
+                tickCounter.getLastDuration(),
                 getTextRenderer()));
     }
 
-    @WrapOperation(method = "render", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/hud/ChatHud;render(Lnet/minecraft/client/gui/DrawContext;III)V"))
-    private void renderSideChat(ChatHud mainChat, DrawContext context, int tickDelta, int x, int y, Operation<Void> operation) {
-        operation.call(mainChat, context, tickDelta, x, y);
-
-        if (FeatureHandler.getFeature("side_chat").isEnabled()) sideChat.render(context, tickDelta, x, y);
+    @WrapOperation(method = "renderChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/ChatHud;render(Lnet/minecraft/client/gui/DrawContext;IIIZ)V"))
+    private void renderSideChat(ChatHud instance, DrawContext context, int currentTick, int mouseX, int mouseY, boolean focused, Operation<Void> original) {
+        original.call(instance, context, currentTick, mouseX, mouseY, focused);
+        if (FeatureHandler.getFeature("side_chat").isEnabled()) sideChat.render(context, currentTick, mouseX, mouseY, focused);
     }
 
 

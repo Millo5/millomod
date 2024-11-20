@@ -1,6 +1,7 @@
 package net.millo.millomod.mixin.render;
 
 import net.millo.millomod.mod.features.FeatureHandler;
+import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -13,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MDebugRenderer {
 
     @Inject(method = "render", at = @At("HEAD"))
-    private void onRender(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, double cameraX, double cameraY, double cameraZ, CallbackInfo ci) {
+    private void onRender(MatrixStack matrices, Frustum frustum, VertexConsumerProvider.Immediate vertexConsumers, double cameraX, double cameraY, double cameraZ, CallbackInfo ci) {
         FeatureHandler.onRender(matrices, vertexConsumers, cameraX, cameraY, cameraZ);
     }
 

@@ -15,7 +15,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class RedevCommand extends Command {
 
@@ -37,18 +39,12 @@ public class RedevCommand extends Command {
         float savedPitch = player.getPitch();
         float savedYaw = player.getYaw();
 
-        NbtList savedItems = new NbtList();
+        List<SaveState.Item> savedItems = new ArrayList<>();
+
         for (int i = 0; i < player.getInventory().size(); i++) {
             ItemStack stackInSlot = player.getInventory().getStack(i);
             if (!stackInSlot.isEmpty()) {
-                NbtCompound itemTag = new NbtCompound();
-                itemTag.putInt("Slot", i);
-                NbtCompound itemNbt = new NbtCompound();
-                itemNbt.putString("id", stackInSlot.getItem().toString());
-                itemNbt.putByte("Count", (byte) stackInSlot.getCount());
-                itemNbt.put("tag", stackInSlot.getOrCreateNbt());
-                itemTag.put("Item", itemNbt);
-                savedItems.add(itemTag);
+                savedItems.add(new SaveState.Item(stackInSlot.copy(), i));
             }
         }
         saveStates.put(stateSlot, new SaveState(savedPos, savedPitch, savedYaw, savedItems));
@@ -65,9 +61,7 @@ public class RedevCommand extends Command {
         SaveState state = saveStates.get(stateSlot);
 
         Vec3d savedPos = state.getPos();
-        NbtList savedItems = state.getItems();
-
-        Vec3d initialPos = new Vec3d(player.getPos().x, player.getPos().y, player.getPos().z);
+        List<SaveState.Item> savedItems = state.getItems();
 
         player.getAbilities().flying = true;
         player.setPitch(state.getPitch());
@@ -76,13 +70,11 @@ public class RedevCommand extends Command {
 
         if (loadInventory) {
             player.getInventory().clear();
-            for (int i = 0; i < savedItems.size(); i++) {
-                NbtCompound itemTag = savedItems.getCompound(i);
-                int slot = itemTag.getInt("Slot");
+            for (SaveState.Item itemTag : savedItems) {
+                int slot = itemTag.slot;
 
                 if (slot >= 0 && slot < player.getInventory().size()) {
-                    ItemStack stackInSlot = ItemStack.fromNbt(itemTag.getCompound("Item"));
-                    PlayerUtil.setItem(slot, stackInSlot);
+                    PlayerUtil.setItem(slot, itemTag.stack.copy());
                 }
             }
         }

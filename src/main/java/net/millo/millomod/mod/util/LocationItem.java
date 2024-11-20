@@ -1,6 +1,8 @@
 package net.millo.millomod.mod.util;
 
 import com.google.gson.JsonObject;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -61,7 +63,8 @@ public class LocationItem {
         varItem.add("data",data);
         pbv.put("hypercube:varitem", NbtString.of(varItem.toString()));
         ItemStack item = Items.PAPER.getDefaultStack();
-        item.setSubNbt("PublicBukkitValues",pbv);
+        NbtComponent nbtComp = NbtComponent.of(pbv);
+        item.set(DataComponentTypes.CUSTOM_DATA, nbtComp);
         return item;
     }
 

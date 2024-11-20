@@ -75,7 +75,7 @@ public class PlayerUtil {
         int slot = mc.player.getInventory().getEmptySlot();
 
         if (slot == -1) {
-            mc.player.sendMessage(Text.literal("No inventory room!").setStyle(GUIStyles.SCARY.getStyle()));
+            mc.player.sendMessage(Text.literal("No inventory room!").setStyle(GUIStyles.SCARY.getStyle()), false);
             return;
         }
 

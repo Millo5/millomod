@@ -4,6 +4,7 @@ import net.millo.millomod.MilloMod;
 import net.millo.millomod.mod.features.Feature;
 import net.millo.millomod.mod.features.OnSendPacket;
 import net.millo.millomod.mod.features.impl.util.Tracker;
+import net.millo.millomod.mod.util.GlobalUtil;
 import net.millo.millomod.system.PlayerUtil;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -155,7 +156,7 @@ public class ArgumentInsert extends Feature {
         if (!enabled) return;
 
 
-        shown = MathHelper.clampedLerp(shown, isSelectorOpen() ? 1f : 0f, MilloMod.MC.getLastFrameDuration());
+        shown = MathHelper.clampedLerp(shown, isSelectorOpen() ? 1f : 0f, GlobalUtil.frameDelta());
         int x = slot.x;
         int y = slot.y;
 
@@ -166,7 +167,7 @@ public class ArgumentInsert extends Feature {
 
         if (showTextField) {
             selectedOption.setSelected(false);
-            selectedOption.drawAugment(context, 0, 0, MilloMod.MC.getLastFrameDuration());
+            selectedOption.drawAugment(context, 0, 0, GlobalUtil.frameDelta());
         }
 
         for (int i = 0; i < options.size(); i++) {
@@ -175,7 +176,7 @@ public class ArgumentInsert extends Feature {
             int yy = (int) (Math.sin(angle) * 20 * shown);
 
             ArgumentOption option = options.get(i);
-            option.draw(context, xx, yy, MilloMod.MC.getLastFrameDuration(), shown);
+            option.draw(context, xx, yy, GlobalUtil.frameDelta(), shown);
         }
 
     }

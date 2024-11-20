@@ -1,6 +1,7 @@
 plugins {
-	id 'fabric-loom' version '1.5-SNAPSHOT'
+	id 'fabric-loom' version '1.8-SNAPSHOT'
 	id 'maven-publish'
+	id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 version = project.mod_version
@@ -36,7 +37,7 @@ dependencies {
 	implementation "net.kyori:adventure-api:4.17.0"
 
 	// Websocket
-	implementation "org.java-websocket:Java-WebSocket:1.5.3"
+	implementation include("org.java-websocket:Java-WebSocket:1.5.3")
 
 //	compileOnly "maven.modrinth:sodium:mc1.20.4-0.5.8"
 
@@ -55,7 +56,8 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 17
+	it.options.encoding = 'UTF-8'
+	it.options.release = 21
 }
 
 java {

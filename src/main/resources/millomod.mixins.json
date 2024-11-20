@@ -4,12 +4,12 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "network.MClientConnection",
-    "player.MPlayerInventory",
     "render.ChestSearchAccessor",
     "render.MChestSearch",
     "render.MItemStack"
   ],
   "client": [
+    "misc.MMouse",
     "network.MClientCommonNetworkHandler",
     "player.MClientPlayerEntity",
     "render.MBlockEntityRendererDispatcher",
@@ -17,7 +17,6 @@
     "render.MDebugMenu",
     "render.MDebugRenderer",
     "render.MInGameHUD",
-    "render.MWorldRenderer",
     "render.chat.MChatHud",
     "render.chat.MChatScreen",
     "render.chat.MMessageHandler"

@@ -6,10 +6,7 @@ import net.millo.millomod.mod.features.Feature;
 import net.millo.millomod.mod.features.HandlePacket;
 import net.millo.millomod.mod.hypercube.Plot;
 import net.millo.millomod.system.FileManager;
-import net.minecraft.network.packet.s2c.play.ClearTitleS2CPacket;
-import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
-import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
+import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
@@ -21,7 +18,7 @@ public class Tracker extends Feature {
     private static double x, z;
     private static Sequence step = Sequence.WAIT_FOR_CLEAR;
     private static boolean requestPlotId = false;
-    private static ArrayList<Callback> plotIdCallbacks = new ArrayList<>();
+    private static final ArrayList<Callback> plotIdCallbacks = new ArrayList<>();
     private static Plot plot;
 
 
@@ -46,6 +43,7 @@ public class Tracker extends Feature {
         Tracker.mode = mode;
         step = Sequence.WAIT_FOR_CLEAR;
         requestPlotId = true;
+        requestPlotIdDelay = 10;
     }
 
     public static Plot getPlot() {
@@ -54,15 +52,17 @@ public class Tracker extends Feature {
 
     @HandlePacket
     public boolean clearTitle(ClearTitleS2CPacket clear) {
-        if (clear.shouldReset()) step = Sequence.WAIT_FOR_POS;
+        if (clear.shouldReset()) {
+            step = Sequence.WAIT_FOR_POS;
+        }
         return false;
     }
 
     @HandlePacket
-    public boolean positionLook(PlayerPositionLookS2CPacket pos) {
+    public boolean positionLook(PlayerPositionLookS2CPacket packet) {
         if (step == Sequence.WAIT_FOR_POS) {
-            x = pos.getX();
-            z = pos.getZ();
+            x = packet.change().position().getX();
+            z = packet.change().position().getZ();
             step = Sequence.WAIT_FOR_MESSAGE;
         }
         return false;
@@ -70,13 +70,15 @@ public class Tracker extends Feature {
 
     @HandlePacket
     public boolean overlay(OverlayMessageS2CPacket overlay) {
-        if (step == Sequence.WAIT_FOR_MESSAGE && overlay.getMessage().getString().startsWith("DiamondFire - ")) setMode(Mode.SPAWN);
+        if (step == Sequence.WAIT_FOR_MESSAGE && overlay.text().getString().startsWith("DiamondFire - ")) {
+            setMode(Mode.SPAWN);
+        }
         return false;
     }
 
 
     private Vec3d localPlayerPos;
-    private int requestPlotIdDelay = 0;
+    private static int requestPlotIdDelay = 0;
     @Override
     public void onTick() {
         if (requestPlotId) {

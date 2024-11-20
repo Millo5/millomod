@@ -83,7 +83,7 @@ public abstract class MContainerScreen<T extends ScreenHandler> extends Screen {
             argumentTextField.setChangedListener((s) -> insertFeature.setValue(s));
             argumentTextField.setMaxLength(10000);
             addSelectableChild(argumentTextField);
-            focusOn(argumentTextField);
+//            focusOn(argumentTextField);
         }
         if (textFieldShown && !insertFeature.showTextField()) {
             // remove it
@@ -94,19 +94,19 @@ public abstract class MContainerScreen<T extends ScreenHandler> extends Screen {
     }
 
 
-    @Inject(method = "drawMouseoverTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;Ljava/util/Optional;II)V"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void renderTooltip(DrawContext context, int x, int y, CallbackInfo ci, ItemStack stack) {
-        boolean enabled = Config.getInstance().get("preview_skin.enabled");
-        if (!enabled) return;
-
-        Item item = stack.getItem();
-        if (item instanceof BlockItem) {
-            Block block = ((BlockItem) item).getBlock();
-            if (block instanceof AbstractSkullBlock) {
-                previewHeadSkin(context, stack);
-            }
-        }
-    }
+//    @Inject(method = "drawMouseoverTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;Ljava/util/Optional;II)V"), locals = LocalCapture.CAPTURE_FAILHARD)
+//    private void renderTooltip(DrawContext context, int x, int y, CallbackInfo ci, ItemStack stack) {
+//        boolean enabled = Config.getInstance().get("preview_skin.enabled");
+//        if (!enabled) return;
+//
+//        Item item = stack.getItem();
+//        if (item instanceof BlockItem) {
+//            Block block = ((BlockItem) item).getBlock();
+//            if (block instanceof AbstractSkullBlock) {
+//                previewHeadSkin(context, stack);
+//            }
+//        }
+//    }
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void mouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         insertFeature.mouseClicked(mouseX, mouseY, button, cir);
@@ -149,20 +149,20 @@ public abstract class MContainerScreen<T extends ScreenHandler> extends Screen {
 
     @Unique
     private void previewHeadSkin(DrawContext context, ItemStack stack) {
-        MinecraftClient mc = MinecraftClient.getInstance();
-
-        NbtCompound nbt = stack.getNbt();
-        if (nbt == null) return;
-
-        GameProfile profile = readGameProfile(nbt.getCompound("SkullOwner"));
-        if (profile == null) return;
-
-        var skin = mc.getSkinProvider().getSkinTextures(profile);
-        var entity = new StaticSkinRenderer(mc.world, skin);
-        var x = Objects.requireNonNull(mc.currentScreen).width / 5;
-        var y = mc.currentScreen.height / 2 + 20;
-
-        InventoryScreen.drawEntity(context, x - 35, y - 50, x + 35, y + 50, 40, 0.0625f, x - 20, y - 20, entity);
+//        MinecraftClient mc = MinecraftClient.getInstance();
+//
+//        NbtCompound nbt = stack.getNbt();
+//        if (nbt == null) return;
+//
+//        GameProfile profile = readGameProfile(nbt.getCompound("SkullOwner"));
+//        if (profile == null) return;
+//
+//        var skin = mc.getSkinProvider().getSkinTextures(profile);
+//        var entity = new StaticSkinRenderer(mc.world, skin);
+//        var x = Objects.requireNonNull(mc.currentScreen).width / 5;
+//        var y = mc.currentScreen.height / 2 + 20;
+//
+//        InventoryScreen.drawEntity(context, x - 35, y - 50, x + 35, y + 50, 40, 0.0625f, x - 20, y - 20, entity);
 
 
 //        var entity = new Skin

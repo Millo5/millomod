@@ -1,6 +1,6 @@
 package net.millo.millomod.mod.features.impl.util;
 
-import net.millo.millomod.MilloMod;
+import net.millo.millomod.mod.util.GlobalUtil;
 import net.millo.millomod.mod.util.MathUtil;
 import net.millo.millomod.mod.util.RenderInfo;
 import net.millo.millomod.system.Config;
@@ -50,10 +50,10 @@ public class NotificationTray extends Feature implements IRenderable {
         TextRenderer textRenderer = info.textRenderer();
 
         for (int i = notifications.size()-1; i > 0; i--) {
-            float t = MathHelper.clamp(MilloMod.MC.getLastFrameDuration(), 0f, 1f);
+            float t = MathHelper.clamp(GlobalUtil.frameDelta(), 0f, 1f);
 
             Notification notification = notifications.get(i);
-            float lifetime = notification.getLifeTime(MilloMod.MC.getLastFrameDuration());
+            float lifetime = notification.getLifeTime(GlobalUtil.frameDelta());
 
             float targetY = i * 10;
             float targetX = lifetime < 60 ? getWidth() : -5;
