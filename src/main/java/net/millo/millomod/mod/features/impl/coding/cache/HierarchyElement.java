@@ -35,4 +35,6 @@ public abstract class HierarchyElement extends ButtonElement {
         if (!isParentFolderOpen()) return 0;
         return super.getHeight();
     }
+
+    public abstract void delete();
 }

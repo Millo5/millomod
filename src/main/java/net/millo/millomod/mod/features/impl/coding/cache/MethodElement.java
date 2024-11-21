@@ -69,19 +69,34 @@ public class MethodElement extends HierarchyElement {
                                 if (template == null) return;
                                 if (MilloMod.MC.player == null) return;
 
+                                SoundHandler.playClick();
                                 PlayerUtil.giveItem(template.getItem());
+                                CacheGUI.lastOpenedGUI.closeContext();
+                            })
+                            .add(Text.literal("Get String"), (b) -> {
+                                if (MilloMod.MC.player == null) return;
+
+                                SoundHandler.playClick();
+                                PlayerUtil.sendCommand("txt " + name);
+                                CacheGUI.lastOpenedGUI.closeContext();
                             })
                             .add(Text.literal("Delete").setStyle(GUIStyles.SCARY.getStyle()), (b) -> {
                                 SoundHandler.playClick();
-                                FileManager.deleteTemplateFile(plotId, filename);
+                                delete();
                                 CacheGUI.lastOpenedGUI.reload();
                                 CacheGUI.lastOpenedGUI.closeContext();
                             })
+
 //                            .add(Text.literal("Refactor"), (b) -> {
 //                                SoundHandler.playClick();
 //                            })
             );
         }
+    }
+
+    @Override
+    public void delete() {
+        FileManager.deleteTemplateFile(plotId, filename);
     }
 
     @Override

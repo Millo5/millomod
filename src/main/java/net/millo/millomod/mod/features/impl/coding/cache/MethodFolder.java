@@ -1,7 +1,10 @@
 package net.millo.millomod.mod.features.impl.coding.cache;
 
+import net.millo.millomod.SoundHandler;
 import net.millo.millomod.mod.util.gui.ElementFadeIn;
+import net.millo.millomod.mod.util.gui.GUIStyles;
 import net.millo.millomod.mod.util.gui.elements.ButtonElement;
+import net.millo.millomod.mod.util.gui.elements.ContextElement;
 import net.millo.millomod.mod.util.gui.elements.ScrollableElement;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -36,8 +39,29 @@ public class MethodFolder extends HierarchyElement {
 
     @Override
     public void onPress(double mouseX, double mouseY, int button) {
-        opened = !opened;
+        if (button == 0) opened = !opened;
+        if (button == 1) {
+            CacheGUI.lastOpenedGUI.openContext(mouseX, mouseY,
+                    new ContextElement(100, textRenderer)
+                            .add(Text.literal("Delete").setStyle(GUIStyles.SCARY.getStyle()), (b) -> {
+                                SoundHandler.playClick();
+                                delete();
+                                CacheGUI.lastOpenedGUI.reload();
+                                CacheGUI.lastOpenedGUI.closeContext();
+                            })
+            );
+        }
 //        if (button == 0) super.onPress(mouseX, mouseY, button);
+    }
+
+    @Override
+    public void delete() {
+        // delete all subfolders and methods
+        for (ButtonElement method : methods) {
+            if (method instanceof HierarchyElement element) {
+                element.delete();
+            }
+        }
     }
 
     float arrowAngle = 0f;
