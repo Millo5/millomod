@@ -29,6 +29,9 @@ public class ArgumentInsert extends Feature {
     private final ArrayList<ArgumentOption> options;
     private int handlerX, handlerY;
 
+    // TODO: Items are incorrect
+    // TODO: Input field doesn't get focus automatically
+
     public ArgumentInsert() {
         options = new ArrayList<>();
         options.add(new ArgumentOption.NumberOption());

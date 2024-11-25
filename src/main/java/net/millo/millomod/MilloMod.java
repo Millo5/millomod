@@ -2,6 +2,7 @@ package net.millo.millomod;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.millo.millomod.system.Config;
 import net.millo.millomod.mod.commands.CommandHandler;
 import net.millo.millomod.mod.features.FeatureHandler;
@@ -12,7 +13,7 @@ import org.slf4j.LoggerFactory;
 public class MilloMod implements ClientModInitializer {
 
     public static final String MOD_ID = "millomod";
-    public static final String MOD_VERSION = "1.6.1";
+    public static final String MOD_VERSION = FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata().getVersion().getFriendlyString();
 
     @SuppressWarnings("unused")
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);

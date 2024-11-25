@@ -27,9 +27,7 @@ import net.minecraft.world.RaycastContext;
 
 public class NotSwitcher extends Feature implements Keybound {
 
-
     KeyBinding key;
-
 
     @Override
     public String getKey() {

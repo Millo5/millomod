@@ -17,7 +17,7 @@ import java.util.Objects;
 
 public enum ItemUtil {
 
-    NOT_ARROW("{components:{\"minecraft:attribute_modifiers\":{modifiers:[],show_in_tooltip:0b},\"minecraft:custom_model_data\":0,\"minecraft:custom_name\":'{\"color\":\"#FFD47F\",\"italic\":false,\"text\":\"NOT Arrow\"}',\"minecraft:damage\":0,\"minecraft:hide_additional_tooltip\":{},\"minecraft:lore\":['{\"extra\":[{\"bold\":false,\"color\":\"gray\",\"italic\":false,\"obfuscated\":false,\"strikethrough\":false,\"text\":\"Click on a Condition block with this\",\"underlined\":false}],\"text\":\"\"}','{\"extra\":[{\"bold\":false,\"color\":\"gray\",\"italic\":false,\"obfuscated\":false,\"strikethrough\":false,\"text\":\"to switch between 'IF' and 'IF NOT'.\",\"underlined\":false}],\"text\":\"\"}']},count:1,id:\"minecraft:spectral_arrow\"}")
+    NOT_ARROW("{count: 1, Slot: 0b, components: {\"minecraft:attribute_modifiers\": {show_in_tooltip: 0b, modifiers: []}, \"minecraft:lore\": ['{\"extra\":[{\"bold\":false,\"color\":\"gray\",\"italic\":false,\"obfuscated\":false,\"strikethrough\":false,\"text\":\"Click on a Condition block with this\",\"underlined\":false}],\"text\":\"\"}', '{\"extra\":[{\"bold\":false,\"color\":\"gray\",\"italic\":false,\"obfuscated\":false,\"strikethrough\":false,\"text\":\"to switch between \\'IF\\' and \\'IF NOT\\'.\",\"underlined\":false}],\"text\":\"\"}'], \"minecraft:custom_name\": '{\"color\":\"#ffd47f\",\"italic\":false,\"text\":\"NOT Arrow\"}', \"minecraft:custom_model_data\": 0, \"minecraft:hide_additional_tooltip\": {}, \"minecraft:damage\": 0}, id: \"minecraft:spectral_arrow\"}")
 
     ;
 
@@ -29,7 +29,8 @@ public enum ItemUtil {
             NbtCompound nbt = NbtHelper.fromNbtProviderString(data);
             return ItemStack.fromNbtOrEmpty(MilloMod.MC.world.getRegistryManager(), nbt);
         } catch (CommandSyntaxException e) {
-            throw new RuntimeException(e);
+            System.out.println("Error parsing item NBT: " + e.getMessage());
+            return ItemStack.EMPTY;
         }
     }
 

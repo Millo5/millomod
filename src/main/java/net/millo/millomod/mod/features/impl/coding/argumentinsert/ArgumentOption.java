@@ -1,5 +1,6 @@
 package net.millo.millomod.mod.features.impl.coding.argumentinsert;
 
+import net.millo.millomod.mod.util.gui.GUIStyles;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
@@ -36,12 +37,11 @@ public abstract class ArgumentOption {
         NbtCompound pbv = new NbtCompound();
         pbv.putString("hypercube:varitem", getVarItemString(item, value));
 
-//        NbtCompound nbt = item.getNbt();
-//        nbt.putInt("CustomModelData", 5000);
-//        nbt.put("PublicBukkitValues", pbv);
-//        item.setNbt(nbt);
+        NbtCompound custom_nbt = new NbtCompound();
+        custom_nbt.putInt("CustomModelData", 5000);
+        custom_nbt.put("PublicBukkitValues", pbv);
 
-        NbtComponent custom_data = NbtComponent.of(pbv);
+        NbtComponent custom_data = NbtComponent.of(custom_nbt);
 
         item.set(DataComponentTypes.CUSTOM_DATA, custom_data);
 
@@ -137,14 +137,19 @@ public abstract class ArgumentOption {
 
 
         private enum Scope {
-            LINE("line", "-i", "{\"italic\":false,\"color\":\"#55AAFF\",\"text\":\"LINE\"}"),
-            LOCAL("local", "-l", "{\"italic\":false,\"color\":\"#55FF55\",\"text\":\"LOCAL\"}"),
-            SAVED("saved", "-s", "{\"italic\":false,\"color\":\"#FFFF55\",\"text\":\"SAVE\"}"),
-            UNSAVED("unsaved", "\n", "{\"italic\":false,\"color\":\"#AAAAAA\",\"text\":\"GAME\"}");
+            LINE("line", "-i", Text.literal("LINE").setStyle(GUIStyles.LINE.getStyle().withItalic(false))),
+            LOCAL("local", "-l", Text.literal("LOCAL").setStyle(GUIStyles.LOCAL.getStyle().withItalic(false))),
+            SAVED("saved", "-s", Text.literal("SAVE").setStyle(GUIStyles.SAVED.getStyle().withItalic(false))),
+            UNSAVED("unsaved", "\n", Text.literal("GAME").setStyle(GUIStyles.UNSAVED.getStyle().withItalic(false)));
+//            LINE("line", "-i", "{\"italic\":false,\"color\":\"#55AAFF\",\"text\":\"LINE\"}"),
+//            LOCAL("local", "-l", "{\"italic\":false,\"color\":\"#55FF55\",\"text\":\"LOCAL\"}"),
+//            SAVED("saved", "-s", "{\"italic\":false,\"color\":\"#FFFF55\",\"text\":\"SAVE\"}"),
+//            UNSAVED("unsaved", "\n", "{\"italic\":false,\"color\":\"#AAAAAA\",\"text\":\"GAME\"}");
 
-            private final String scope, key, lore;
+            private final String scope, key;
+            private final Text lore;
 
-            Scope(String scope, String key, String lore) {
+            Scope(String scope, String key, Text lore) {
                 this.scope = scope;
                 this.key = key;
                 this.lore = lore;
@@ -162,11 +167,9 @@ public abstract class ArgumentOption {
                 }
             }
 
+            LoreComponent lore = new LoreComponent(List.of(scope.lore));
 
-            LoreComponent lore = new LoreComponent(List.of());
-            lore.lines().add(Text.of(scope.lore));
-
-            item.set(DataComponentTypes.CUSTOM_NAME, Text.literal(value).setStyle(Style.EMPTY.withItalic(false)));
+            item.set(DataComponentTypes.CUSTOM_NAME, Text.literal(value).setStyle(Style.EMPTY.withColor(Formatting.WHITE).withItalic(false)));
             item.set(DataComponentTypes.LORE, lore);
 
             return "{\"id\":\"var\",\"data\":{\"name\":\"" + value + "\",\"scope\":\"" + scope.scope + "\"}}";

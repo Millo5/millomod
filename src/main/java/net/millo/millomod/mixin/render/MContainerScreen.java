@@ -83,7 +83,13 @@ public abstract class MContainerScreen<T extends ScreenHandler> extends Screen {
             argumentTextField.setChangedListener((s) -> insertFeature.setValue(s));
             argumentTextField.setMaxLength(10000);
             addSelectableChild(argumentTextField);
+
+            setFocused(null);
+            argumentTextField.setFocused(false);
+            setFocused(argumentTextField);
+            argumentTextField.setFocused(true);
 //            focusOn(argumentTextField);
+
         }
         if (textFieldShown && !insertFeature.showTextField()) {
             // remove it
