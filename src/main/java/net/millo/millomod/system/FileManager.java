@@ -26,8 +26,14 @@ public class FileManager {
 
     // Cached Plots DNS
 
-    public static File getDNSFile() {
+    public static Path getModFolder() {
         Path path = MilloMod.MC.runDirectory.toPath().resolve(MilloMod.MOD_ID);
+        path.toFile().mkdirs();
+        return path;
+    }
+
+    public static File getDNSFile() {
+        Path path = getModFolder();
         File file = path.resolve("plots.dns").toFile();
         file.mkdirs();
         return file;
@@ -89,7 +95,7 @@ public class FileManager {
     // Cached Templates
 
     public static Path getTemplatePath() {
-        Path path = MilloMod.MC.runDirectory.toPath().resolve(MilloMod.MOD_ID).resolve("cache");
+        Path path = getModFolder().resolve("cache");
         path.toFile().mkdirs();
         return path;
     }
@@ -136,6 +142,100 @@ public class FileManager {
 
     public static boolean isPlotCached(String plotId) {
         return Files.exists(getTemplatePath().resolve(plotId));
+    }
+
+    public static ArrayList<Integer> cachedPlots = new ArrayList<>();
+    public static ArrayList<Integer> getCachedPlots() {
+        cachedPlots = Arrays.stream(Objects.requireNonNull(getTemplatePath().toFile().listFiles()))
+                .map(File::getName)
+                .map(Integer::parseInt)
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        return cachedPlots;
+    }
+
+    public static ArrayList<Integer> getPlotsCached() {
+        if (cachedPlots.isEmpty()) return getCachedPlots();
+        return cachedPlots;
+    }
+
+    public static void clearDiff() {
+        try {
+            File file = getModFolder().resolve("diffs").toFile();
+            if (!file.exists()) return;
+            Arrays.stream(Objects.requireNonNull(file.listFiles())).forEach(f -> {
+                try {
+                    Files.deleteIfExists(f.toPath());
+                } catch (IOException e) {
+                    System.out.println("Couldn't delete diff: " + e);
+                }
+            });
+        } catch (Exception e) {
+            System.out.println("Couldn't delete diffs: " + e);
+        }
+    }
+    public static void writeDiff(String method, String data) {
+        try {
+            File file = getModFolder().resolve("diffs").toFile();
+            if (!file.exists()) file.mkdirs();
+            file = file.toPath().resolve(method + ".diff").toFile();
+            Files.deleteIfExists(file.toPath());
+            Files.createFile(file.toPath());
+            Files.write(file.toPath(), data.getBytes(), StandardOpenOption.WRITE);
+        } catch (IOException e) {
+            System.out.println("Couldn't save diff: " + e);
+        }
+    }
+
+    public static void writeJson(String name, JsonObject json) {
+        try {
+            File file = getModFolder().resolve(name).toFile();
+            Files.deleteIfExists(file.toPath());
+            Files.createFile(file.toPath());
+            Files.write(file.toPath(), json.toString().getBytes(), StandardOpenOption.WRITE);
+        } catch (IOException e) {
+            System.out.println("Couldn't save json: " + e);
+        }
+    }
+
+    public static String readJson(String name) {
+        File file = getModFolder().resolve(name).toFile();
+        if (!file.exists()) return null;
+
+        try {
+            return new String(Files.readAllBytes(file.toPath()));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static void clearExportedPlot(int id) {
+        try {
+            File file = getModFolder().resolve("exports").resolve(String.valueOf(id)).toFile();
+            if (!file.exists()) return;
+            Arrays.stream(Objects.requireNonNull(file.listFiles())).forEach(f -> {
+                try {
+                    Files.deleteIfExists(f.toPath());
+                } catch (IOException e) {
+                    System.out.println("Couldn't delete export: " + e);
+                }
+            });
+        } catch (Exception e) {
+            System.out.println("Couldn't delete exports: " + e);
+        }
+    }
+
+    public static void writeExportedPlot(int id, String method, String data) {
+        try {
+            File file = getModFolder().resolve("exports").resolve(String.valueOf(id)).toFile();
+            if (!file.exists()) file.mkdirs();
+            file = file.toPath().resolve(method).toFile();
+            Files.deleteIfExists(file.toPath());
+            Files.createFile(file.toPath());
+            Files.write(file.toPath(), data.getBytes(), StandardOpenOption.WRITE);
+        } catch (IOException e) {
+            System.out.println("Couldn't save export: " + e);
+        }
     }
 
 

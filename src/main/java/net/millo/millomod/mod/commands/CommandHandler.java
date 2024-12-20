@@ -27,7 +27,8 @@ public class CommandHandler {
                 new ColorsCommand(),
                 new MilloModCommand(),
                 new CacheCommand(),
-                new DfGiveCommand()
+                new DfGiveCommand(),
+                new ActionDumpCommand()
         );
     }
 

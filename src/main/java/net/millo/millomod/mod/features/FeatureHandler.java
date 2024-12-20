@@ -49,7 +49,11 @@ public class FeatureHandler {
                 new NoClientClick(), // @
                 new SideChatFeature(), // @
 //                new CodeHider(), // @
-                new SocketServe() // +
+                new SocketServe(), // +
+                new PickChestValue(), // ?
+                new SpectatorToggle(), // ?  -Cannot exit rn
+                new SoundPreview(), // @
+                new ActionDumpReader() // +
         );
 
         Config config = Config.getInstance();

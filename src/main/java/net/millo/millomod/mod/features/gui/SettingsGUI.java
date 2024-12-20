@@ -42,7 +42,7 @@ public class SettingsGUI extends GUI {
         addFeatureToggle(settingsList, "notification_tray");
         addFeatureToggle(settingsList, "argument_insert");
         addFeatureToggle(settingsList, "no_client_click");
-        addFeatureToggle(settingsList, "code_hider");
+        addFeatureToggle(settingsList, "sound_preview");
 
 
         addHeader(settingsList, "Side Chat");
@@ -107,7 +107,7 @@ public class SettingsGUI extends GUI {
 
 
     private void addStringOption(ScrollableElement list, String key) {
-        String value = config.get(key);
+        String value = config.getOrDefault(key, "");
         int x = backgroundWidth / 2 - 100;
 
         String tooltip = Text.translatable("millo.feature."+key+".desc").getString();
@@ -132,7 +132,7 @@ public class SettingsGUI extends GUI {
     }
 
     private void addBooleanOption(ScrollableElement list, String key, String name, String tooltip) {
-        boolean state = config.get(key);
+        boolean state = config.getOrDefault(key, false);
         int x = backgroundWidth / 2 - 100;
 
         ButtonElement b = new ButtonElement(x, 0, 200, 20, Text.literal(name+": ").append(GUIStyles.getTrueFalse(state)), button -> {
@@ -148,7 +148,7 @@ public class SettingsGUI extends GUI {
     }
 
     private void addIntegerOption(ScrollableElement list, String key, int min, int max) {
-        int current = config.get(key);
+        int current = config.getOrDefault(key, 0);
 
         String name = Text.translatable("millo.feature."+key).getString();
         String tooltip = Text.translatable("millo.feature."+key+".desc").getString();

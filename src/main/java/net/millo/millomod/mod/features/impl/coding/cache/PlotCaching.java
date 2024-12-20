@@ -390,6 +390,10 @@ public class PlotCaching extends Feature implements Keybound {
 
     }
 
+    public ArrayList<Integer> getCachedPlots() {
+        return FileManager.getCachedPlots();
+    }
+
     private enum ScanPlotStep { NONE, TELEPORT, WAIT_FOR_TP, CACHE, WAIT_FOR_CACHE }
 
 

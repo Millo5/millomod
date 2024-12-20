@@ -40,6 +40,7 @@ public class SoundHandler {
         player.playSoundToPlayer(soundEvent, category, volume, pitch);
     }
 
-
-
+    public static void playSound(SoundEvent soundEvent, double volume, double pitch) {
+        playSound(soundEvent, SoundCategory.MASTER, (float) volume, (float) pitch);
+    }
 }

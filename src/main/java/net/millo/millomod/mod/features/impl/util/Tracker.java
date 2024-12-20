@@ -107,12 +107,12 @@ public class Tracker extends Feature {
         }
         // example: `                                       \nYou are currently coding on:\n\n→ 🌊 MENACES [41800]\n→ Owner: BupBoi_ \n→ Server: Node 2\n                                       `
         if (requestPlotId && content.startsWith("                          ")) {
-            String regex = "\\[\\d+\\]\\n";
+            String regex = "\\[\\d+\\] (?=\\[[\\w-]+\\]\\n|\\n)";
             Matcher matcher = Pattern.compile(regex).matcher(content);
             if (matcher.find()) {
 
                 // plot name
-                String nameRegex = "(?<=→ ).*(?= \\[\\d+\\]\\n)";
+                String nameRegex = "(?<=→ ).*(?= \\[\\d+\\] (?=\\[[\\w-]+\\]\\n|\\n))";
                 Matcher nameMatcher = Pattern.compile(nameRegex).matcher(content);
                 if (nameMatcher.find()) {
                     String plotName = nameMatcher.group().trim();

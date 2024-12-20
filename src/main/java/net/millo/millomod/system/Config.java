@@ -211,4 +211,12 @@ public class Config {
         return (T) entry.getValue();
     }
 
+    public <T> T getOrDefault(String key, T defaultValue) {
+        ConfigEntry<?> entry = config.get(key);
+        if (entry == null) {
+            return defaultValue;
+        }
+        return (T) entry.getValue();
+    }
+
 }
