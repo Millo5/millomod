@@ -225,14 +225,14 @@ public class PlotCaching extends Feature implements Keybound {
     private int scanPlotTicksTried_OLD = 0;
 
 
-    public boolean scanPlotOld() {
+    public boolean scanPlotOld(String size) {
         if (doingFullScan) {
             doingFullScan = false;
             return false;
         }
         doingFullScan = true;
 
-        ArrayList<BlockPos> signs = Tracker.getPlot().scanForMethods();
+        ArrayList<BlockPos> signs = Tracker.getPlot().scanForMethods(size);
 
         scanStack_OLD = new Stack<>();
         scanStack_OLD.addAll(signs);
@@ -377,6 +377,11 @@ public class PlotCaching extends Feature implements Keybound {
                 scanStepTarget = scanStack_OLD.pop();
                 scanPlotStep_OLD = ScanPlotStep.WAIT_FOR_TP;
                 TeleportHandler.teleportTo(scanStepTarget.toCenterPos().add(0, 1.5, 0), () -> {
+                    if (!TeleportHandler.lastSuccess) {
+                        // Out of bounds, skip
+                        scanPlotStep_OLD = ScanPlotStep.TELEPORT;
+                        return;
+                    }
                     scanPlotStep_OLD = ScanPlotStep.CACHE;
                 });
             }

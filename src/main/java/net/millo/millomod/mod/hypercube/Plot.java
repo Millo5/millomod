@@ -90,13 +90,21 @@ public class Plot {
     }
 
     public ArrayList<BlockPos> scanForMethods() {
+        return scanForMethods("massive");
+    }
+
+    public ArrayList<BlockPos> scanForMethods(String size) {
         if (MilloMod.MC.world == null) return null;
 
         ArrayList<BlockPos> signs = new ArrayList<>();
 
+        int zSize = size.equals("mega") ? 300 : size.equals("massive") ? 300 : size.equals("large") ? 100 : 50;
+        int xSize = size.equals("mega") ? 300 : 20;
+
+
         int xEnd = originX + 1;
-        int xStart = originX - 20;
-        int zEnd = originZ + 300;
+        int xStart = originX - xSize;
+        int zEnd = originZ + zSize;
 
         for (int y = 255; y >= getCodeBaseY(); y -= 5) {
             for (int x = xStart; x < xEnd; x++) {
