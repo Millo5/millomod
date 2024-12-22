@@ -9,6 +9,7 @@ import net.millo.millomod.mod.hypercube.actiondump.ActionDump;
 import net.millo.millomod.mod.hypercube.actiondump.Sound;
 import net.millo.millomod.mod.util.ItemUtil;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 
@@ -42,10 +43,15 @@ public class SoundPreview extends Feature  {
         Optional<Sound> adSound = Arrays.stream(actionDump.sounds).filter(s -> s.icon.name.equals(sound)).findFirst();
         if (adSound.isEmpty()) return;
         try {
-            SoundEvent soundEvent = (SoundEvent) SoundEvents.class.getDeclaredField(adSound.get().sound).get(null);
-            SoundHandler.playSound(soundEvent, vol, pitch);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new RuntimeException(e);
+            Object fieldValue = SoundEvents.class.getDeclaredField(adSound.get().sound).get(null);
+            if (fieldValue instanceof SoundEvent soundEvent) {
+                SoundHandler.playSound(soundEvent, vol, pitch);
+            } else if (fieldValue instanceof RegistryEntry.Reference<?> soundEventReference) {
+                SoundHandler.playSound((SoundEvent) soundEventReference.value(), vol, pitch);
+            } else if (fieldValue instanceof RegistryEntry<?> soundEventRegistry) {
+                SoundHandler.playSound((SoundEvent) soundEventRegistry.value(), vol, pitch);
+            }
+        } catch (IllegalAccessException | NoSuchFieldException ignored) {
         }
 
 
