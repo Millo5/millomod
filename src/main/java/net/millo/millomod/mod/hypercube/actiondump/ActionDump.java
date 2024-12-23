@@ -1,6 +1,7 @@
 package net.millo.millomod.mod.hypercube.actiondump;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import net.millo.millomod.system.FileManager;
 
 public class ActionDump {
@@ -10,9 +11,13 @@ public class ActionDump {
     private static ActionDump instance;
     public static ActionDump getActionDump() {
         if (instance == null) {
-            String a = FileManager.readJson("action_dump.json");
-            if (a == null) return null;
-            instance = new Gson().fromJson(a, ActionDump.class);
+            try {
+                String a = FileManager.readJson("action_dump.json");
+                if (a == null) return null;
+                instance = new Gson().fromJson(a, ActionDump.class);
+            } catch (Exception e) {
+                return null;
+            }
         }
         return instance;
     }

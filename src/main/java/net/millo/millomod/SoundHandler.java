@@ -2,11 +2,11 @@ package net.millo.millomod;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.sound.SoundInstance;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.random.Random;
 
 public class SoundHandler {
 
@@ -42,5 +42,14 @@ public class SoundHandler {
 
     public static void playSound(SoundEvent soundEvent, double volume, double pitch) {
         playSound(soundEvent, SoundCategory.MASTER, (float) volume, (float) pitch);
+    }
+
+    public static void playSoundVariant(String soundId, long seed, float volume, float pitch) {
+        ClientPlayerEntity player = mc.player;
+        if (player == null) return;
+        SoundEvent sound = SoundEvent.of(Identifier.of(soundId));
+
+        PositionedSoundInstance soundInstance = new PositionedSoundInstance(sound, SoundCategory.MASTER, volume, pitch, Random.create(seed), player.getX(), player.getY(), player.getZ());
+        MilloMod.MC.getSoundManager().play(soundInstance);
     }
 }
