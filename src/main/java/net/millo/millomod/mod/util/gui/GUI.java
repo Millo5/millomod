@@ -12,7 +12,6 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
 import java.awt.*;
-import java.lang.reflect.Field;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
@@ -89,7 +88,9 @@ public abstract class GUI extends Screen {
         }
 
         if (fade.getProgress() >= 1f) {
-            super.render(context, mouseX, mouseY, delta);
+            try {
+                super.render(context, mouseX, mouseY, delta);
+            } catch (Exception ignored) {} // Concurrency error, ignore it
             if (contextMenu != null) contextMenu.render(context, mouseX, mouseY, delta);
         } else {
             renderBackground(context, mouseX, mouseY, delta);

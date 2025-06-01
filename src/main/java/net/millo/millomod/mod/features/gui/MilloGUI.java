@@ -1,6 +1,7 @@
 package net.millo.millomod.mod.features.gui;
 
 import net.millo.millomod.MilloMod;
+import net.millo.millomod.SoundHandler;
 import net.millo.millomod.system.Config;
 import net.millo.millomod.mod.commands.Command;
 import net.millo.millomod.mod.commands.CommandHandler;
@@ -32,22 +33,32 @@ public class MilloGUI extends GUI {
         addDrawableChild(new TextElement(x, y + 26, backgroundWidth, 16,
                 Text.literal("v"+ MilloMod.MOD_VERSION).setStyle(GUIStyles.COMMENT.getStyle()), textRenderer));
         addDrawableChild(new TextElement(x, y + 40, backgroundWidth, 16,
-                Text.literal("quik thingsssss :33").setStyle(GUIStyles.COMMENT.getStyle()), textRenderer));
+                Text.literal("Nothing better than gatekeeping :3").setStyle(GUIStyles.COMMENT.getStyle()), textRenderer));
 
         addDrawableChild(new TextElement(x, y + 58, backgroundWidth, 16,
                 Text.literal("Credits:").setStyle(GUIStyles.LINE.getStyle()), textRenderer));
         addDrawableChild(new TextElement(x, y + 68, backgroundWidth, 16,
-                Text.literal("Millo5 - I um.. me").setStyle(GUIStyles.UNSAVED.getStyle()), textRenderer));
+                Text.literal("Millo5 - Thigh highs for focus").setStyle(GUIStyles.UNSAVED.getStyle()), textRenderer));
         addDrawableChild(new TextElement(x, y + 78, backgroundWidth, 16,
-                Text.literal("GeorgeRNG - I stole his code. [Code Client]").setStyle(GUIStyles.UNSAVED.getStyle()), textRenderer));
-        addDrawableChild(new TextElement(x, y + 88, backgroundWidth, 16,
-                Text.literal("xtreemes - The Guinea Pig").setStyle(GUIStyles.UNSAVED.getStyle()), textRenderer));
-        addDrawableChild(new TextElement(x, y + 98, backgroundWidth, 16,
-                Text.literal("endersaltz - idees").setStyle(GUIStyles.UNSAVED.getStyle()), textRenderer));
+                Text.literal("xtreemes & endersaltz - Testing / Ideas").setStyle(GUIStyles.UNSAVED.getStyle()), textRenderer));
+//        addDrawableChild(new TextElement(x, y + 88, backgroundWidth, 16,
+//                Text.literal("").setStyle(GUIStyles.UNSAVED.getStyle()), textRenderer));
+//        addDrawableChild(new TextElement(x, y + 98, backgroundWidth, 16,
+//                Text.literal("").setStyle(GUIStyles.UNSAVED.getStyle()), textRenderer));
 
 
-        addDrawableChild(new ButtonElement(x + backgroundWidth/2 - 50, y + 116, 100, 16, Text.of("Settings"), (button) -> {
+//        addDrawableChild(new ButtonElement(x + backgroundWidth/2 - 50, y + 116, 100, 16, Text.of("Settings"), (button) -> {
+        addDrawableChild(new ButtonElement(x + backgroundWidth/2 - 50 - 55, y + 116, 100, 16, Text.of("Settings"), (button) -> {
+            SoundHandler.playClick();
             GUI gui = new SettingsGUI();
+            gui.setParent(this);
+            gui.setFade(this.getFade());
+            gui.open();
+        }, textRenderer));
+
+        addDrawableChild(new ButtonElement(x + backgroundWidth/2 - 50 + 55, y + 116, 100, 16, Text.of("Patch Notes"), (button) -> {
+            SoundHandler.playClick();
+            GUI gui = new PatchNotesGUI();
             gui.setParent(this);
             gui.setFade(this.getFade());
             gui.open();

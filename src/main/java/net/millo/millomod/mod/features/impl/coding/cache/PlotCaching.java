@@ -275,13 +275,9 @@ public class PlotCaching extends Feature implements Keybound {
         ContainerComponent containerComponent = shulkerComponents.get(DataComponentTypes.CONTAINER);
         if (containerComponent == null) return false;
 
+        NotificationTray.pushNotification(Text.of("Scanning"), Text.literal("Shulker Box").setStyle(GUIStyles.NAME.getStyle()));
+
         for (ItemStack itemStack : containerComponent.iterateNonEmpty()) {
-//            ComponentMap components = itemStack.getComponents();
-//
-//            NbtComponent custom_data = components.get(DataComponentTypes.CUSTOM_DATA);
-//            if (custom_data == null) continue;
-//
-//            NbtCompound bukkitValues = custom_data.copyNbt().getCompound("PublicBukkitValues");
             var bukkitValues = ItemUtil.getPBV(itemStack);
             if (bukkitValues == null || !bukkitValues.contains("hypercube:codetemplatedata", NbtElement.STRING_TYPE))
                 continue;
@@ -289,6 +285,7 @@ public class PlotCaching extends Feature implements Keybound {
             String codeTemplateData = bukkitValues.getString("hypercube:codetemplatedata");
 
             Template template = Template.parseItem(codeTemplateData);
+            FileManager.writeTemplate(template);
 
             methodStack.put(template.getName(), template);
         }
@@ -303,12 +300,14 @@ public class PlotCaching extends Feature implements Keybound {
 
         if (scanStep == ScanPlotStep.CACHE && waitForShulkers >= 1) {
             waitForShulkers++;
-            if (waitForShulkers > 5) {
+            if (waitForShulkers > 10) {
                 waitForShulkers = 0;
                 NotificationTray.pushNotification(Text.of("Caching"), Text.of(methodStack.size() + " methods"));
 
                 methodStackIterator = methodStack.entrySet().iterator();
                 scanStep = ScanPlotStep.TELEPORT;
+
+                fullScan = false; // end of scan
             }
             return;
         }
@@ -353,6 +352,7 @@ public class PlotCaching extends Feature implements Keybound {
 
 
 
+    int teleportDelay = 0;
     private void scanTickOld() {
         if (!doingFullScan || MilloMod.MC.player == null) return;
 
@@ -362,13 +362,22 @@ public class PlotCaching extends Feature implements Keybound {
             return;
         }
         scanPlotTicksTried_OLD++;
-        if (scanPlotTicksTried_OLD > 10) {
+        if (scanPlotTicksTried_OLD > 10 && scanStepTarget != null) {
             scanPlotStep_OLD = ScanPlotStep.CACHE;
             if (MilloMod.MC.player.getPos().distanceTo(scanStepTarget.toCenterPos()) > 4) {
                 scanStack_OLD.add(scanStepTarget);
                 scanPlotStep_OLD = ScanPlotStep.TELEPORT;
             }
         }
+
+
+        if (scanPlotStep_OLD == ScanPlotStep.TELEPORT) {
+            teleportDelay ++;
+            if (teleportDelay < 60) {
+                return;
+            }
+        }
+        teleportDelay = 0;
 
         switch (scanPlotStep_OLD) {
             default -> {}

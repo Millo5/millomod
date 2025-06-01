@@ -45,7 +45,7 @@ public class ArgumentInsert extends Feature {
     }
 
 
-    private String value = "test data";
+    private String value = "meow";
     public void setValue(String value) {
         this.value = value;
     }

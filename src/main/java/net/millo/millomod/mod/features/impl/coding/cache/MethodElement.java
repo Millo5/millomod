@@ -39,7 +39,7 @@ public class MethodElement extends HierarchyElement {
     private final int plotId;
     public MethodElement(int height, int plotId, String filename, PressAction onPress, TextRenderer textRenderer) {
         super(height,
-                Text.of(filename.replaceAll("\\.(event|func|process|entity_event)$", "").replaceAll(".+(?=\\.\\w)", "")),
+                Text.of(Template.reverseFileName(filename).replaceAll("\\.(event|func|process|entity_event)$", "").replaceAll(".+(?=\\.\\w)", "")),
                 onPress, textRenderer);
         name = filename.replaceAll("\\.(event|func|process|entity_event)$", "");
         this.filename = filename;

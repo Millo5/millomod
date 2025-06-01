@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.millo.millomod.MilloMod;
 import net.millo.millomod.mod.features.impl.util.teleport.TeleportHandler;
 import net.millo.millomod.mod.util.gui.*;
+import net.millo.millomod.system.PlayerUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -118,6 +119,19 @@ public class LineElement implements ScrollableEntryI, Element, Widget, Selectabl
         });
         this.hasLineNum = true;
     }
+    public void setLineNum(int lineNum, String methodName, int progress) {
+        Text message = Text.literal(String.valueOf(lineNum)).setStyle(GUIStyles.LINE_NUM.getStyle());
+        TextWidget w = new TextWidget(x, y, 30, height, message, textRenderer);
+        textWidgets.add(0, w);
+        pressActionMap.put(w, button -> {
+            MilloMod.MC.setScreen(null);
+            TeleportHandler.teleportToMethod(methodName, () -> {
+
+                TeleportHandler.teleportTo(TeleportHandler.getLastTeleportPosition().add(-1, -1.5, progress));
+            });
+        });
+        this.hasLineNum = true;
+    }
 
 
     public String getString() {
@@ -132,12 +146,12 @@ public class LineElement implements ScrollableEntryI, Element, Widget, Selectabl
         }
     }
 
-    public SearchResult searchText(String query) {
+    public SearchResult searchText(String methodName, String query) {
         query = query.toLowerCase();
         int ind = 0;
         for (TextWidget textWidget : textWidgets) {
             if (textWidget.getMessage().getString().toLowerCase().contains(query)) {
-                return new SearchResult(this, ind);
+                return new SearchResult(methodName, this, ind);
             }
             ind++;
         }

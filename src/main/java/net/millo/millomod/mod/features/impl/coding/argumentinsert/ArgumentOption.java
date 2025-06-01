@@ -103,6 +103,7 @@ public abstract class ArgumentOption {
 
         @Override
         protected String getVarItemString(ItemStack item, String value) {
+            if (value.equalsIgnoreCase("z")) value = "0"; // Quick hand for 0. as I can only reach up to 9 without moving my hand. (I know, I am lazy)
             item.set(DataComponentTypes.CUSTOM_NAME, Text.literal(value).setStyle(Style.EMPTY.withColor(0xff5555).withItalic(false)));
             return "{\"id\":\"num\",\"data\":{\"name\":\"" + value + "\"}}";
         }

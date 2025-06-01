@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import net.millo.millomod.MilloMod;
+import net.millo.millomod.mod.hypercube.template.Template;
 import net.millo.millomod.mod.util.ItemUtil;
 import net.millo.millomod.mod.util.gui.GUIStyles;
 import net.millo.millomod.system.PlayerUtil;
@@ -89,6 +90,17 @@ public class MilloWebSocketServer extends WebSocketServer {
             }
             PlayerUtil.giveItem(stack);
             message(MessageType.SUCCESS, source, "Received " + stack.getName().getString() + "!");
+        }
+
+        if (type.equals("template")) {
+            Template template = Template.parse(data);
+            if (template == null) {
+                message(MessageType.ERROR, source, "Failed to parse provided template data.");
+                return null;
+            }
+
+            PlayerUtil.giveItem(template.getItem());
+            message(MessageType.SUCCESS, source, "Received " + template.getName() + "!");
         }
 
         return result.toString();

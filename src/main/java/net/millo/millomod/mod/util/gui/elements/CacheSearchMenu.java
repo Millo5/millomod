@@ -1,5 +1,7 @@
 package net.millo.millomod.mod.util.gui.elements;
 
+import net.millo.millomod.MilloMod;
+import net.millo.millomod.SoundHandler;
 import net.millo.millomod.mod.features.impl.coding.cache.CacheGUI;
 import net.millo.millomod.mod.features.impl.coding.cache.LineElement;
 import net.millo.millomod.mod.hypercube.template.Template;
@@ -18,9 +20,11 @@ import net.minecraft.util.math.MathHelper;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
+
 public class CacheSearchMenu implements Drawable, Element, Widget, Selectable {
 
     private static String searchText = "";
+    private static ArrayList<SearchResult> searchResults = new ArrayList<>();
 
     ElementFadeIn fade = new ElementFadeIn(ElementFadeIn.Direction.LEFT);
     private int x, y, width, height;
@@ -30,6 +34,8 @@ public class CacheSearchMenu implements Drawable, Element, Widget, Selectable {
 
     private TextFieldElement searchTextField;
     private ButtonElement searchButton;
+    private ScrollableElement searchResultsElement;
+
 
     // [x,y] in parameters is the top right corner
     public CacheSearchMenu(CacheGUI cacheGUI, int x, int y) {
@@ -38,8 +44,8 @@ public class CacheSearchMenu implements Drawable, Element, Widget, Selectable {
         this.x = x;
         this.y = y;
         this.width = cacheGUI.width/5;
-        this.height = 80;
-        targetHeight = 80;
+        this.height = cacheGUI.getBackgroundHeight();
+        targetHeight = cacheGUI.getBackgroundHeight();
 
         targetX = x - width;
 
@@ -49,47 +55,54 @@ public class CacheSearchMenu implements Drawable, Element, Widget, Selectable {
         searchTextField.setChangedListener((s) -> searchText = s);
         cacheGUI.addDrawableChild(searchTextField);
 
-        searchButton = new ButtonElement(targetX+1, y+17, (width-2)/2, 16, Text.literal("Search"), this::search, cacheGUI.getTextRenderer());
+        searchButton = new ButtonElement(targetX+1, y+17, (width-2)/2, 16, Text.literal("Search"), (button) -> search(), cacheGUI.getTextRenderer());
         searchButton.setZ(11);
         cacheGUI.addDrawableChild(searchButton);
+
+        searchResultsElement = new ScrollableElement(targetX+1, y+35, width-2, height-36, Text.literal(""));
+        searchResultsElement.setFade(fade);
+        cacheGUI.addDrawableChild(searchResultsElement);
     }
 
     public String getSearchText() {
         return searchText;
     }
 
-    private void search(ButtonElement buttonElement) {
+    private void search() {
+        SoundHandler.playClick();
+
         System.out.println(searchTextField.getText());
 
         String txt = searchTextField.getText().toLowerCase();
 
         // Search through all files
-
         int totalResults = 0;
+        searchResults.clear();
 
         ArrayList<SearchResult> results = new ArrayList<>();
         ArrayList<String> methodNames = cacheGUI.getAllMethods();
         for (String methodName : methodNames) {
             Template template = FileManager.readTemplate(cacheGUI.getPlotId(), methodName);
 
-            int templateResults = 0;
-
             if (template == null) continue;
             for (TemplateBlock block : template.blocks) {
                 LineElement line = block.toLine();
-                SearchResult result = line.searchText(txt);
+                SearchResult result = line.searchText(methodName, txt);
                 if (result != null) {
-                    totalResults ++;
-                    templateResults ++;
-                    System.out.println(methodName + ": " + line.getString() + " " + result);
+                    searchResults.add(result);
+                    MilloMod.MC.player.sendMessage(Text.literal("Found in " + methodName + ": " + line.getString() + " " + result), false);
                 }
             }
-
         }
+
+        updateSearchResults();
 
     }
 
 
+    private void updateSearchResults() {
+
+    }
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
@@ -104,7 +117,8 @@ public class CacheSearchMenu implements Drawable, Element, Widget, Selectable {
         context.getMatrices().translate(x, y, 10);
 
         context.fill(0, 0, width, height, 0x96000000);
-        context.drawBorder(0, 0, width, height, 0xFFFFFFFF);
+//        context.drawBorder(0, 0, width, height, 0xFFFFFFFF);
+        context.fill(0, 0, 1, height, 0xFFFFFFFF);
 
         context.getMatrices().pop();
     }
@@ -156,4 +170,11 @@ public class CacheSearchMenu implements Drawable, Element, Widget, Selectable {
         return height;
     }
     public void forEachChild(Consumer<ClickableWidget> consumer) {}
+
+    public void focus() {
+        searchTextField.setEditable(true);
+        searchTextField.setSelectionStart(0);
+        searchTextField.setSelectionEnd(searchTextField.getText().length());
+        cacheGUI.setFocused(searchTextField);
+    }
 }

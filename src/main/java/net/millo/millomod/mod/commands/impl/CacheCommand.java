@@ -89,6 +89,22 @@ public class CacheCommand extends Command {
                                         })
                                 )
                         )
+                        .then(ArgBuilder.literal("clear")
+                                .then(ArgBuilder.argument("id", IntegerArgumentType.integer())
+                                        .executes(ctx -> {
+                                            int id = IntegerArgumentType.getInteger(ctx, "id");
+                                            FileManager.clearCachedPlot(id);
+                                            MilloMod.MC.player.sendMessage(Text.of("Cleared plot " + id), false);
+                                            return 1;
+                                        })
+                                )
+                        )
+                        .then(ArgBuilder.literal("folder")
+                                .executes(ctx -> {
+                                    FileManager.openCachedPlotsFolder();
+                                    return 1;
+                                })
+                        )
                 .executes(ctx -> {
                     new CacheGUI().open();
                     return 1;

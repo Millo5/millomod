@@ -44,6 +44,8 @@ dependencies {
 	// Websocket
 	implementation include("org.java-websocket:Java-WebSocket:1.5.3")
 
+	implementation include("org.reflections:reflections:0.10.2")
+
 //	compileOnly "maven.modrinth:sodium:mc1.20.4-0.5.8"
 
 	// Uncomment the following line to enable the deprecated Fabric API modules. 

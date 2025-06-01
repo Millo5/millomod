@@ -59,6 +59,7 @@ public enum GUIStyles {
     CHANGED(new Color(0x7F7FFF)),
     ADDED(new Color(0x7FFF7F)),
     REMOVED(new Color(0xFF7F7F)),
+    BUG(new Color(0xFF7FFF)),
 
     ;
 

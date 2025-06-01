@@ -253,7 +253,10 @@ public class CacheGUI extends GUI {
 
             LineElement line = i.toLine();
             line.setIndent(indentation);
-            line.setLineNum(lineNum, template.startPos.add(-1, 0, worldProgress));
+
+            if (template.startPos == null) line.setLineNum(lineNum,  template.getMethodName().charAt(0) + " " + template.getName(), worldProgress);
+            else line.setLineNum(lineNum, template.startPos.add(-1, 0, worldProgress));
+
             line.init(backgroundWidth, 12);
             if (searchMenuOpen) {
                 line.highlight(searchMenu.getSearchText());
@@ -293,7 +296,8 @@ public class CacheGUI extends GUI {
         String[] match = searchBar.getText().trim().toLowerCase().split(" ");
         for (String methodName : methodNames) {
             // Exclude methods that do not fit filter
-            if (!Arrays.stream(match).allMatch(i -> methodName.toLowerCase().contains(i)) && !searchBar.getText().trim().isEmpty()) {
+            String parsedFileName = Template.reverseFileName(methodName);
+            if (!Arrays.stream(match).allMatch(i -> parsedFileName.toLowerCase().contains(i)) && !searchBar.getText().trim().isEmpty()) {
                 continue;
             }
 
@@ -307,7 +311,7 @@ public class CacheGUI extends GUI {
 
 
             // Find folder tree for current method
-            var matcher = pattern.matcher(methodName.replaceAll("\\.(event|func|process|entity_event)$", ""));
+            var matcher = pattern.matcher(parsedFileName.replaceAll("\\.(event|func|process|entity_event)$", ""));
             if (matcher.find()) {
                 String folderNamespace = matcher.group();
                 List<String> folderNames = new ArrayList<>(List.of(folderNamespace.split("\\.")));
@@ -400,15 +404,23 @@ public class CacheGUI extends GUI {
     }
 
 
+    public int getBackgroundHeight() {
+        return backgroundHeight;
+    }
 
     CacheSearchMenu searchMenu;
     private boolean searchMenuOpen = false;
     private void openSearchMenu() {
-        if (searchMenuOpen) return;
+        if (searchMenuOpen) {
+            searchMenu.focus();
+            return;
+        }
         searchMenuOpen = true;
 
         searchMenu = new CacheSearchMenu(this, width - paddingX, paddingY);
         addDrawableChild(searchMenu);
+
+        searchMenu.focus();
     }
 
     @Override

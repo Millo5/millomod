@@ -79,6 +79,27 @@ public class Template {
         return result.toString();
     }
 
+    public static String reverseFileName(String fileName) {
+        char[] forbidden = { '<', '>', ':', '"', '/', '\\', '|', '?', '*' };
+        Pattern pattern = Pattern.compile("_(\\d+)_");
+
+        StringBuilder result = new StringBuilder();
+        Matcher matcher = pattern.matcher(fileName);
+        int lastMatchEnd = 0;
+        while (matcher.find()) {
+            result.append(fileName, lastMatchEnd, matcher.start());
+            int index = Integer.parseInt(matcher.group(1));
+            if (index >= 0 && index < forbidden.length) {
+                result.append(forbidden[index-1]);
+            } else {
+                result.append(matcher.group());
+            }
+            lastMatchEnd = matcher.end();
+        }
+        result.append(fileName, lastMatchEnd, fileName.length());
+        return result.toString();
+    }
+
     public String getMethodName() {
         return blocks.get(0).block;
     }

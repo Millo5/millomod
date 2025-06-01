@@ -53,7 +53,8 @@ public class FeatureHandler {
                 new PickChestValue(), // ?
                 new SpectatorToggle(), // ?  -Cannot exit rn
                 new SoundPreview(), // @
-                new ActionDumpReader() // +
+                new ActionDumpReader(), // +
+                new AngelsGrace() // @
         );
 
         Config config = Config.getInstance();

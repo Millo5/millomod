@@ -55,38 +55,20 @@ public class SoundPreview extends Feature  {
 
         Optional<Sound> adSound = Arrays.stream(actionDump.sounds).filter(s -> s.icon.name.equals(sound)).findFirst();
         if (adSound.isEmpty()) return;
-        try {
-            Object fieldValue = SoundEvents.class.getDeclaredField(adSound.get().sound).get(null);
 
-            SoundEvent soundEvent;
-            switch (fieldValue) {
-                case SoundEvent se -> soundEvent = se;
-                case RegistryEntry.Reference<?> soundEventReference ->
-                        soundEvent = (SoundEvent) soundEventReference.value();
-                case RegistryEntry<?> soundEventRegistry -> soundEvent = (SoundEvent) soundEventRegistry.value();
-                case null, default -> {
-                    MilloMod.MC.player.sendMessage(Text.of("Failed to play sound: " + fieldValue.getClass().getName()), false);
-                    return;
-                }
-            }
+        String soundId = adSound.get().soundId;
+        if (soundId == null) return;
 
-            if (!variant.isEmpty()) {
-                Optional<SoundVariant> optionalVariant = Arrays.stream(adSound.get().variants).filter(v -> v.id.equals(variant)).findFirst();
-                if (optionalVariant.isPresent()) {
-                    long seed = optionalVariant.get().seed;
-                    SoundHandler.playSoundVariant(adSound.get().soundId, seed, (float) vol, (float) pitch);
-                    return;
-                }
-            }
-            SoundHandler.playSound(soundEvent, vol, pitch);
-
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            MilloMod.MC.player.sendMessage(Text.of("Failed to play sound: " + e.getMessage()), false);
-
-            for (Field field : SoundEvents.class.getFields()) {
-                MilloMod.MC.player.sendMessage(Text.of(field.toString()), false);
+        if (!variant.isEmpty()) {
+            Optional<SoundVariant> optionalVariant = Arrays.stream(adSound.get().variants).filter(v -> v.id.equals(variant)).findFirst();
+            if (optionalVariant.isPresent()) {
+                long seed = optionalVariant.get().seed;
+                SoundHandler.playSoundVariant(soundId, seed, (float) vol, (float) pitch);
+                return;
             }
         }
+        SoundHandler.playSound(soundId, (float) vol, (float) pitch);
+
     }
 
 }

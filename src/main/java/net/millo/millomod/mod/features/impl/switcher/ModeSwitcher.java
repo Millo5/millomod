@@ -33,13 +33,8 @@ public class ModeSwitcher extends Feature implements Keybound, IRenderable {
     private float shown = 0f;
     private float rotateBump = 0f;
 
-
-    // TODO: if player is in spawn, show "favourites" on first page instead
-
-
-    private static ArrayList<Option> addCommandOption(ArrayList<Option> list, String text, String command) {
+    private static void addCommandOption(ArrayList<Option> list, String text, String command) {
         list.add(new Option(Text.of(text), () -> PlayerUtil.sendCommand(command)));
-        return list;
     }
 
     @Override
@@ -56,78 +51,82 @@ public class ModeSwitcher extends Feature implements Keybound, IRenderable {
         options = getPage(page);
     }
 
-    private static final ArrayList<ArrayList<Option>> pages;
-    static {
-        pages = new ArrayList<>();
-        pages.add(createPage(
-                "Dev", "dev",
-                "Play", "play",
-                "Build", "build"
-                ));
+    private static ArrayList<ArrayList<Option>> pages;
 
-        pages.add(createPage(
-                "Not", "not",
-                "Cancel", "cancel",
-                "Refer", "reference",
-                "B.F.S.", "bracket",
-                "G. Val", "val",
-                "Values", "values"
-        ));
-
-        pages.add(createPage(
-                "Spawn", "s",
-                "Node 1", "server node1",
-                "Node 2", "server node2",
-                "Node 3", "server node3",
-                "Node 4", "server node4",
-                "Node 5", "server node5",
-                "Node 6", "server node6",
-                "Node 7", "server node7",
-                "Beta", "server beta"
-        ));
-
-        ArrayList<Option> page3 = new ArrayList<>();
-        addCommandOption(page3, "C l", "c l");
-        addCommandOption(page3, "C g", "c g");
-        addCommandOption(page3, "C n", "c n");
-        addCommandOption(page3, "C dnd", "c dnd");
-        page3.add(new Option(Text.of("Auto @"), () -> {
-            FeatureHandler.getFeature("auto_command").toggleEnabled();
-            NotificationTray.pushNotification(
-                    Text.literal("Toggled"),
-                    Text.translatable("config.millo.auto_command"),
-                    GUIStyles.getTrueFalse(true)
-            );
-        }));
-        pages.add(page3);
-
-        pages.add(createPage(
-                "Creat", "gmc",
-                "Adven", "gma",
-                "Survi", "gms",
-                "Spect", "gmsp"
-        ));
-    }
-
-    private static ArrayList<Option> createPage(String ...args) {
-        ArrayList<Option> page = new ArrayList<>();
-        for (int i = 0; i < args.length; i += 2) {
-            String name = args[i];
-            String command = args[i + 1];
-            addCommandOption(page, name, command);
-        }
-        return page;
-    }
 
     private ArrayList<Option> getPage(int page) {
-        this.page = (5 + page) % 5;
+        if (pages.isEmpty()) return new ArrayList<>();
+
+        this.page = (pages.size() + page) % pages.size();
         return pages.get(this.page);
     }
 
     public ModeSwitcher() {
+        onConfigUpdate(Config.getInstance());
+
         options = getPage(0);
     }
 
+    @Override
+    public void defaultConfig(Config config) {
+        super.defaultConfig(config);
+        config.set("mode_switcher.pages", 5);
+
+        config.set("mode_switcher.0.0", "Dev;dev");
+        config.set("mode_switcher.0.1", "Play;play");
+        config.set("mode_switcher.0.2", "Build;build");
+
+        config.set("mode_switcher.1.0", "Not;not");
+        config.set("mode_switcher.1.1", "Cancel;cancel");
+        config.set("mode_switcher.1.2", "Refer;reference");
+        config.set("mode_switcher.1.3", "B.F.S.;bracket");
+        config.set("mode_switcher.1.4", "G. Val;val");
+        config.set("mode_switcher.1.5", "Values;values");
+
+
+        config.set("mode_switcher.2.0", "Spawn;s");
+        config.set("mode_switcher.2.1", "Node 1;server node1");
+        config.set("mode_switcher.2.2", "Node 2;server node2");
+        config.set("mode_switcher.2.3", "Node 3;server node3");
+        config.set("mode_switcher.2.4", "Node 4;server node4");
+        config.set("mode_switcher.2.5", "Node 5;server node5");
+        config.set("mode_switcher.2.6", "Node 6;server node6");
+        config.set("mode_switcher.2.7", "Node 7;server node7");
+        config.set("mode_switcher.2.8", "Beta;server beta");
+
+        config.set("mode_switcher.3.0", "C l;c l");
+        config.set("mode_switcher.3.1", "C g;c g");
+        config.set("mode_switcher.3.2", "C n;c n");
+        config.set("mode_switcher.3.3", "C dnd;c dnd");
+        config.set("mode_switcher.3.4", "Auto @;auto_command");
+
+        config.set("mode_switcher.4.0", "Creat;gmc");
+        config.set("mode_switcher.4.1", "Adven;gma");
+        config.set("mode_switcher.4.2", "Survi;gms");
+        config.set("mode_switcher.4.3", "Spect;gmsp");
+    }
+
+    @Override
+    public void onConfigUpdate(Config config) {
+        super.onConfigUpdate(config);
+
+        pages = new ArrayList<>();
+        for (int i = 0; i < config.getOrDefault("mode_switcher.pages", 0); i++) {
+            ArrayList<Option> page = new ArrayList<>();
+            for (int j = 0; j < 9; j++) {
+                String value = config.getOrDefault("mode_switcher." + i + "." + j, null);
+                if (value == null) continue;
+                String[] parts = value.split(";");
+
+                if (parts.length == 2) {
+                    addCommandOption(page, parts[0], parts[1]);
+                }
+            }
+            pages.add(page);
+        }
+
+        options = getPage(0);
+    }
 
     @Override
     public void render(RenderInfo info) {

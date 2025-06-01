@@ -43,6 +43,7 @@ public class SettingsGUI extends GUI {
         addFeatureToggle(settingsList, "argument_insert");
         addFeatureToggle(settingsList, "no_client_click");
         addFeatureToggle(settingsList, "sound_preview");
+        addFeatureToggle(settingsList, "angels_grace");
 
 
         addHeader(settingsList, "Side Chat");
