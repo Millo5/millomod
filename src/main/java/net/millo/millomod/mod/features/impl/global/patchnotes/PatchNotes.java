@@ -6,6 +6,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public abstract class PatchNotes {
 
@@ -24,6 +25,9 @@ public abstract class PatchNotes {
 
     //
 
+    protected ArrayList<PatchNote> generateContent(PatchNote... notes) {
+        return new ArrayList<>(Arrays.asList(notes));
+    }
 
 
 
