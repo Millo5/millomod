@@ -1,0 +1,35 @@
+{
+  "version": "1.7.3",
+  "patchNotes": [
+    {
+      "type": "HEADER",
+      "feature": "New Features"
+    },
+    {
+      "type": "FEATURE",
+      "feature": "Angels Grace",
+      "description": "Start flying in dev mode whenever you fall with a menu open"
+    },
+    {
+      "type": "FEATURE",
+      "feature": "Patch Notes",
+      "description": "Added actual patch notes. Unbelievable, I know."
+    },
+    {
+      "type": "FEATURE",
+      "feature": "/cache clear \u003cid\u003e"
+    },
+    {
+      "type": "FEATURE",
+      "feature": "/cache folder"
+    },
+    {
+      "type": "HEADER",
+      "feature": "Bug Fixes"
+    },
+    {
+      "type": "BUG_FIX",
+      "feature": "Action Dump Reader"
+    }
+  ]
+}
